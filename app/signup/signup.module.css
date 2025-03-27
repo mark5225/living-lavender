@@ -1,0 +1,34 @@
+.signupContainer {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background-color: var(--background);
+    position: relative;
+  }
+  
+  .signupContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(var(--primary-hover) 1px, transparent 1px),
+      radial-gradient(var(--primary-hover) 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    opacity: 0.1;
+    z-index: 0;
+  }
+  
+  /* Global styles for the signup page */
+  :global(.signup-page) {
+    background-color: var(--background);
+  }
+  
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .signupContainer {
+      padding: 0;
+    }
+  }

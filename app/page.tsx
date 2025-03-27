@@ -1,103 +1,195 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './page.module.css';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className="container">
+          <div className={styles.heroContent}>
+            <div className={styles.heroText}>
+              <h1>Find Your Perfect Match with Living Lavender</h1>
+              <p>
+                Join our community of like-minded individuals looking for meaningful connections. 
+                Our matching algorithm helps you find compatible partners based on your values, 
+                interests, and lifestyle.
+              </p>
+              <div className={styles.heroButtons}>
+                <Link href="/signup" className="btn btn-primary btn-lg">
+                  Get Started
+                </Link>
+                <Link href="/about" className="btn btn-outline btn-lg">
+                  Learn More
+                </Link>
+              </div>
+            </div>
+            <div className={styles.heroImage}>
+              <Image 
+                src="/images/hero-image.svg" 
+                alt="Happy couple illustration" 
+                width={500} 
+                height={400}
+                priority
+              />
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      {/* Features Section */}
+      <section className={styles.features}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2>Why Choose Living Lavender?</h2>
+            <p>Our dating platform is designed with your happiness in mind</p>
+          </div>
+
+          <div className={styles.featureGrid}>
+            <div className={styles.featureCard}>
+              <div className={styles.featureIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <h3>Advanced Matching</h3>
+              <p>Our compatibility algorithm matches you with people who share your values and interests.</p>
+            </div>
+
+            <div className={styles.featureCard}>
+              <div className={styles.featureIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <h3>Privacy First</h3>
+              <p>Your data is secure with us. We never share your personal information with third parties.</p>
+            </div>
+
+            <div className={styles.featureCard}>
+              <div className={styles.featureIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <h3>Community</h3>
+              <p>Join a supportive community of singles who are serious about finding meaningful relationships.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className={styles.howItWorks}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2>How Living Lavender Works</h2>
+            <p>Your journey to finding love is just a few steps away</p>
+          </div>
+
+          <div className={styles.stepsContainer}>
+            <div className={styles.step}>
+              <div className={styles.stepNumber}>1</div>
+              <h3>Create Your Profile</h3>
+              <p>Sign up and complete our detailed personality assessment to help us understand who you are.</p>
+            </div>
+            
+            <div className={styles.stepConnector}></div>
+            
+            <div className={styles.step}>
+              <div className={styles.stepNumber}>2</div>
+              <h3>Discover Matches</h3>
+              <p>Our algorithm will suggest compatible matches based on your preferences and personality.</p>
+            </div>
+            
+            <div className={styles.stepConnector}></div>
+            
+            <div className={styles.step}>
+              <div className={styles.stepNumber}>3</div>
+              <h3>Connect</h3>
+              <p>Start conversations with your matches and build meaningful connections.</p>
+            </div>
+          </div>
+          
+          <div className={styles.ctaContainer}>
+            <Link href="/signup" className="btn btn-primary btn-lg">
+              Start Your Journey
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className={styles.testimonials}>
+        <div className="container">
+          <div className={styles.sectionHeader}>
+            <h2>Success Stories</h2>
+            <p>Hear from couples who found love on Living Lavender</p>
+          </div>
+
+          <div className={styles.testimonialGrid}>
+            <div className={styles.testimonialCard}>
+              <div className={styles.testimonialImage}>
+                <Image 
+                  src="/images/testimonial-1.jpg" 
+                  alt="Sarah and Michael" 
+                  width={100} 
+                  height={100}
+                />
+              </div>
+              <div className={styles.testimonialContent}>
+                <p className={styles.testimonialText}>
+                  "We matched on Living Lavender and instantly connected over our shared love for hiking. Six months later, he proposed on top of our favorite mountain!"
+                </p>
+                <p className={styles.testimonialAuthor}>Sarah & Michael</p>
+                <p className={styles.testimonialInfo}>Together for 2 years</p>
+              </div>
+            </div>
+
+            <div className={styles.testimonialCard}>
+              <div className={styles.testimonialImage}>
+                <Image 
+                  src="/images/testimonial-2.jpg" 
+                  alt="David and Jennifer" 
+                  width={100} 
+                  height={100}
+                />
+              </div>
+              <div className={styles.testimonialContent}>
+                <p className={styles.testimonialText}>
+                  "I was skeptical about online dating until I tried Living Lavender. The personality matching really works! We're now planning our wedding."
+                </p>
+                <p className={styles.testimonialAuthor}>David & Jennifer</p>
+                <p className={styles.testimonialInfo}>Engaged after 1 year</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className={styles.ctaContainer}>
+            <Link href="/success-stories" className="btn btn-outline">
+              Read More Stories
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className={styles.cta}>
+        <div className="container">
+          <div className={styles.ctaInner}>
+            <h2>Ready to Find Your Match?</h2>
+            <p>Join thousands of singles already on Living Lavender and start your journey to finding love today.</p>
+            <Link href="/signup" className="btn btn-primary btn-lg">
+              Sign Up Now
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

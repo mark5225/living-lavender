@@ -1,0 +1,153 @@
+.wizardContainer {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  
+  .wizardHeader {
+    background-color: var(--primary);
+    padding: 1.5rem 2rem;
+    color: white;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  
+  .logo span {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  
+  .progressContainer {
+    position: relative;
+    margin-top: 1rem;
+  }
+  
+  .progressBar {
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+    margin: 1.5rem 0;
+    border-radius: var(--radius-full);
+    position: relative;
+  }
+  
+  .progressIndicator {
+    position: absolute;
+    height: 100%;
+    background-color: white;
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+  }
+  
+  .progressStep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: -10px;
+    transition: all 0.3s ease;
+  }
+  
+  .progressStep:nth-child(1) { left: 0%; }
+  .progressStep:nth-child(2) { left: 25%; }
+  .progressStep:nth-child(3) { left: 50%; }
+  .progressStep:nth-child(4) { left: 75%; }
+  .progressStep:nth-child(5) { left: 100%; }
+  
+  .progressDot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+  
+  .progressLabel {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .progressStep.completed .progressDot,
+  .progressStep.active .progressDot {
+    background-color: white;
+    color: var(--primary);
+  }
+  
+  .progressStep.completed .progressLabel,
+  .progressStep.active .progressLabel {
+    opacity: 1;
+  }
+  
+  .wizardContent {
+    padding: 2rem;
+  }
+  
+  .wizardNavigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .wizardBtn {
+    min-width: 120px;
+  }
+  
+  /* Step specific styles */
+  .stepHeader {
+    margin-bottom: 2rem;
+  }
+  
+  .stepTitle {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .stepDescription {
+    color: var(--text-light);
+  }
+  
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (max-width: 992px) {
+    .wizardContainer {
+      margin: 1rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .formGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .progressLabel {
+      display: none;
+    }
+    
+    .wizardBtn {
+      min-width: auto;
+      flex: 1;
+    }
+  }
