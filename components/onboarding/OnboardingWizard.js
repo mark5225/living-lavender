@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import styles from './OnboardingWizard.module.css';
 
 // Import step components
@@ -12,10 +14,14 @@ import PhotoUploadStep from './steps/PhotoUploadStep';
 import CompleteStep from './steps/CompleteStep';
 
 const OnboardingWizard = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     // Basic Info
-    firstName: '',
+    firstName: session?.user?.firstName || '',
     lastName: '',
     birthdate: '',
     gender: '',
@@ -95,11 +101,62 @@ const OnboardingWizard = () => {
     e.preventDefault();
     if (currentStep === totalSteps) {
       try {
-        // Here you would typically send the data to your API
-        console.log('Submitting data:', formData);
-        // If successful, you'd navigate to the dashboard or profile page
+        setIsSubmitting(true);
+        setSubmitError('');
+        
+        // Handle photo uploads
+        const photoUrls = [];
+        if (formData.photos && formData.photos.length > 0) {
+          for (const photo of formData.photos) {
+            if (photo.file) { // Only upload if it's a file, not a URL
+              const photoFormData = new FormData();
+              photoFormData.append('file', photo.file);
+              
+              const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: photoFormData,
+              });
+              
+              if (!uploadRes.ok) {
+                throw new Error('Failed to upload image');
+              }
+              
+              const imageData = await uploadRes.json();
+              photoUrls.push({ url: imageData.url });
+            } else if (photo.url) {
+              // If it's already a URL (from a previous upload), keep it
+              photoUrls.push({ url: photo.url });
+            }
+          }
+        }
+        
+        // Prepare profile data
+        const profileData = {
+          ...formData,
+          photos: photoUrls
+        };
+        
+        // Save profile data
+        const response = await fetch('/api/profiles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileData),
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Failed to save profile');
+        }
+        
+        // Redirect to dashboard
+        router.push('/dashboard');
       } catch (error) {
         console.error('Error submitting form:', error);
+        setSubmitError(error.message || 'Something went wrong');
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       nextStep();
@@ -187,6 +244,12 @@ const OnboardingWizard = () => {
       </div>
 
       <div className={styles.wizardContent}>
+        {submitError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {submitError}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit}>
           {renderStep()}
           
@@ -196,6 +259,7 @@ const OnboardingWizard = () => {
                 type="button" 
                 className={`btn btn-outline ${styles.wizardBtn}`} 
                 onClick={prevStep}
+                disabled={isSubmitting}
               >
                 Back
               </button>
@@ -204,8 +268,9 @@ const OnboardingWizard = () => {
             <button 
               type="submit" 
               className={`btn btn-primary ${styles.wizardBtn}`}
+              disabled={isSubmitting}
             >
-              {currentStep === totalSteps ? 'Complete Profile' : 'Continue'}
+              {isSubmitting ? 'Saving...' : (currentStep === totalSteps ? 'Complete Profile' : 'Continue')}
             </button>
           </div>
         </form>

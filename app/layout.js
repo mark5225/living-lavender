@@ -2,6 +2,7 @@ import './globals.css';
 import { Montserrat, Open_Sans } from 'next/font/google';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { Providers } from './providers';
 
 // Load the fonts
 const montserrat = Montserrat({
@@ -45,9 +46,11 @@ export default function RootLayout({ children }) {
       className={`${montserrat.variable} ${openSans.variable}`}
     >
       <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <Providers>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
