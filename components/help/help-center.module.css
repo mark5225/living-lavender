@@ -1,0 +1,547 @@
+.helpCenter {
+    min-height: 100vh;
+    background-color: var(--background);
+  }
+  
+  /* Hero Section */
+  .helpHero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    padding: 3rem 0;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .helpHero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(var(--primary-hover) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.2;
+    z-index: 0;
+  }
+  
+  .helpTitle {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Search */
+  .searchContainer {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: var(--radius-lg);
+    padding: 0.75rem 1.25rem;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .searchContainer.focused {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  
+  .searchIcon {
+    margin-right: 0.75rem;
+    color: var(--primary);
+  }
+  
+  .searchInput {
+    flex-grow: 1;
+    border: none;
+    font-size: 1.125rem;
+    outline: none;
+    color: var(--text);
+    background-color: transparent;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  .clearSearch {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: var(--radius-full);
+  }
+  
+  .clearSearch:hover {
+    color: var(--text);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Help Cards */
+  .helpCards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .helpCard {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: all 0.3s ease;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .helpCard:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    color: var(--text);
+  }
+  
+  .helpCardIcon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .helpCard h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary);
+  }
+  
+  .helpCard p {
+    color: var(--text-light);
+    margin-bottom: 0;
+  }
+  
+  /* Search Results */
+  .searchResults {
+    padding: 3rem 0;
+    background-color: var(--background);
+  }
+  
+  .searchResultsTitle {
+    margin-bottom: 2rem;
+    color: var(--primary);
+  }
+  
+  .searchResultsList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .searchResultItem {
+    margin-bottom: 1rem;
+  }
+  
+  .searchResultCategory {
+    display: inline-block;
+    font-size: 0.825rem;
+    color: var(--primary);
+    background-color: rgba(116, 100, 160, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+  }
+  
+  .noResults {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .noResultsIcon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background);
+    color: var(--primary);
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .noResults h3 {
+    margin-bottom: 1rem;
+    color: var(--primary);
+  }
+  
+  /* FAQ Section */
+  .faqSection {
+    padding: 3rem 0;
+    background-color: var(--background);
+  }
+  
+  .faqContainer {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+  }
+  
+  .faqSidebar {
+    position: sticky;
+    top: 100px;
+    height: max-content;
+  }
+  
+  .faqSidebarTitle {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    color: var(--primary);
+  }
+  
+  .faqCategories {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+  
+  .faqCategoryBtn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    padding: 1rem;
+    border: none;
+    background-color: transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text);
+  }
+  
+  .faqCategoryBtn:hover {
+    background-color: var(--card-bg);
+    color: var(--primary);
+  }
+  
+  .faqCategoryBtn.active {
+    background-color: var(--card-bg);
+    color: var(--primary);
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .faqCategoryIcon {
+    display: flex;
+    align-items: center;
+    color: var(--primary);
+    margin-right: 0.75rem;
+  }
+  
+  .contactSidebar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .contactSidebar h3 {
+    color: white;
+    margin-bottom: 0.75rem;
+  }
+  
+  .contactSidebar p {
+    margin-bottom: 1.25rem;
+    opacity: 0.9;
+  }
+  
+  .contactSidebarBtn {
+    background-color: white !important;
+    color: var(--primary) !important;
+    width: 100%;
+  }
+  
+  .contactSidebarBtn:hover {
+    background-color: var(--background) !important;
+    color: var(--primary) !important;
+  }
+  
+  .faqContent {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .faqContentHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .categoryTitle {
+    display: flex;
+    align-items: center;
+    color: var(--primary);
+  }
+  
+  .categoryIcon {
+    display: flex;
+    align-items: center;
+    margin-right: 0.75rem;
+    color: var(--primary);
+  }
+  
+  .faqList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .faqItem {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .faqQuestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    padding: 1.25rem 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text);
+  }
+  
+  .faqQuestionContent {
+    flex: 1;
+  }
+  
+  .faqQuestion h3 {
+    font-size: 1.125rem;
+    margin: 0;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    color: var(--text);
+  }
+  
+  .faqQuestion:hover h3 {
+    color: var(--primary);
+  }
+  
+  .faqQuestion.expanded h3 {
+    color: var(--primary);
+  }
+  
+  .faqToggle {
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--primary);
+    transition: transform 0.3s ease;
+  }
+  
+  .faqQuestion.expanded .faqToggle {
+    transform: rotate(180deg);
+  }
+  
+  .faqAnswer {
+    padding: 0 0 1.5rem;
+    margin-top: -0.5rem;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .faqActions {
+    display: flex;
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+  
+  .faqActionBtn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.25rem 0;
+  }
+  
+  .faqActionBtn svg {
+    margin-right: 0.5rem;
+  }
+  
+  .faqActionBtn:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+  }
+  
+  /* Contact Section */
+  .contactSection {
+    padding: 4rem 0;
+    background-color: white;
+  }
+  
+  .contactContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+  
+  .contactInfo h2,
+  .contactForm h2 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+  
+  .contactMethods {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+  }
+  
+  .contactMethods li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+  
+  .contactMethodIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background);
+    color: var(--primary);
+    border-radius: 50%;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+  
+  .contactMethodContent h3 {
+    margin-bottom: 0.25rem;
+    font-size: 1.125rem;
+    color: var(--text);
+  }
+  
+  .contactMethodContent p {
+    margin-bottom: 0.25rem;
+    color: var(--text-light);
+  }
+  
+  .contactHours {
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+  
+  .formGridTwo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .helpCards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .faqContainer {
+      grid-template-columns: 1fr;
+    }
+    
+    .faqSidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
+    
+    .faqCategories {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .faqCategoryBtn {
+      flex-direction: column;
+      padding: 0.75rem;
+      min-width: 100px;
+      text-align: center;
+    }
+    
+    .faqCategoryIcon {
+      margin-right: 0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .contactContainer {
+      grid-template-columns: 1fr;
+    }
+    
+    .contactInfo {
+      order: 2;
+    }
+    
+    .contactForm {
+      order: 1;
+      margin-bottom: 2rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .helpTitle {
+      font-size: 2rem;
+    }
+    
+    .helpCards {
+      grid-template-columns: 1fr;
+    }
+    
+    .formGridTwo {
+      grid-template-columns: 1fr;
+    }
+    
+    .categoryTitle {
+      font-size: 1.5rem;
+    }
+  }
