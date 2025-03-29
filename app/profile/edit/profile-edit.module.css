@@ -1,0 +1,436 @@
+/* app/profile/edit/profile-edit.module.css */
+.editProfileContainer {
+    min-height: 100vh;
+    background-color: var(--background);
+    padding: 2rem 0;
+  }
+  
+  .editHeader {
+    margin-bottom: 2rem;
+  }
+  
+  .editHeader h1 {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .editHeader p {
+    color: var(--text-light);
+  }
+  
+  .formContainer {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .formNavigation {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .navTab {
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .navTab:hover {
+    color: var(--primary);
+  }
+  
+  .navTab.active {
+    color: var(--primary);
+  }
+  
+  .navTab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary);
+  }
+  
+  .tabContent {
+    display: none;
+  }
+  
+  .tabContent.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .formSection {
+    margin-bottom: 2rem;
+  }
+  
+  .formSection h2 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .formRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .formCol {
+    margin-bottom: 1.5rem;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .bioCharCount {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    text-align: right;
+  }
+  
+  .interestsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .interestItem {
+    padding: 0.75rem;
+    background-color: var(--background);
+    border-radius: var(--radius-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  
+  .interestItem:hover {
+    border-color: var(--primary);
+  }
+  
+  .interestItem.selected {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .interestNote {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+  }
+  
+  .photoUploadSection {
+    margin-bottom: 2rem;
+  }
+  
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dropzone:hover {
+    border-color: var(--primary);
+    background-color: rgba(116, 100, 160, 0.05);
+  }
+  
+  .dropzone.dragging {
+    border-color: var(--primary);
+    background-color: rgba(116, 100, 160, 0.1);
+  }
+  
+  .dropzoneContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .uploadIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(116, 100, 160, 0.1);
+    color: var(--primary);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+  
+  .dropzoneText {
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  
+  .browseLink {
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .dropzoneHint {
+    font-size: 0.875rem;
+    color: var(--text-light);
+  }
+  
+  .fileInput {
+    display: none;
+  }
+  
+  .photoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .photoItem {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+  
+  .photoContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .mainPhotoLabel {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background-color: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+  }
+  
+  .removePhoto {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.2s ease;
+  }
+  
+  .removePhoto:hover {
+    background-color: var(--danger);
+  }
+  
+  .addMorePhotos {
+    aspect-ratio: 1 / 1;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .addMorePhotos:hover {
+    border-color: var(--primary);
+    background-color: rgba(116, 100, 160, 0.05);
+  }
+  
+  .addMorePhotos span {
+    margin-top: 0.5rem;
+    color: var(--primary);
+  }
+  
+  .errorMessage {
+    background-color: rgba(217, 83, 79, 0.1);
+    color: var(--danger);
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+  }
+  
+  .successMessage {
+    background-color: rgba(92, 184, 92, 0.1);
+    color: var(--success);
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+  }
+  
+  .rangeSlider {
+    width: 100%;
+    height: 5px;
+    background-color: var(--background);
+    outline: none;
+    border-radius: var(--radius-full);
+    -webkit-appearance: none;
+  }
+  
+  .rangeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .rangeSlider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .rangeValue {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: var(--primary);
+    text-align: center;
+  }
+  
+  .ageRangeContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .ageInputGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .ageInput {
+    width: 80px;
+    text-align: center;
+  }
+  
+  .ageRangeSeparator {
+    color: var(--text-light);
+  }
+  
+  .genderToggleGroup {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .genderToggle {
+    flex: 1;
+    padding: 0.75rem;
+    background-color: var(--background);
+    border-radius: var(--radius-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  
+  .genderToggle:hover {
+    border-color: var(--primary);
+  }
+  
+  .genderToggle.selected {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .errorText {
+    font-size: 0.875rem;
+    color: var(--danger);
+    margin-top: 0.5rem;
+  }
+  
+  @media (max-width: 992px) {
+    .formRow {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    
+    .interestsGrid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .photoGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .formNavigation {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .navTab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 0.75rem 1rem;
+    }
+    
+    .interestsGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .genderToggleGroup {
+      flex-direction: column;
+    }
+  }
+
+  /* Add this to your profile-edit.module.css file */
+
+.distanceContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .distanceContainer .rangeSlider {
+    margin-bottom: 0.5rem;
+  }

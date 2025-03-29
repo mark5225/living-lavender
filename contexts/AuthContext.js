@@ -1,146 +1,142 @@
 'use client';
 
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
+// Create the context
 const AuthContext = createContext();
 
-// Mock auth service directly in this file to avoid import issues
-const mockUsers = [
-  {
-    id: '1',
-    email: 'demo@example.com',
-    password: 'password123',
-    firstName: 'Demo',
-    lastName: 'User',
-    profile: {
-      bio: 'This is a demo user profile.',
-      photos: [{ url: '/images/demo-profile.jpg' }],
-      interests: ['Travel', 'Music', 'Cooking'],
-      location: 'New York',
-      gender: 'non-binary',
-      birthdate: '1990-01-01',
+// Mock user data for demo purposes
+const mockUser = {
+  id: '123456',
+  firstName: 'Jane',
+  lastName: 'Doe',
+  email: 'jane.doe@example.com',
+  profile: {
+    bio: 'I love hiking, reading, and trying new restaurants. Looking for someone who shares my passion for adventure!',
+    location: 'San Francisco, CA',
+    birthdate: '1990-01-15',
+    gender: 'female',
+    occupation: 'Software Engineer',
+    education: 'Master\'s Degree',
+    interests: ['Hiking', 'Reading', 'Cooking', 'Travel', 'Photography'],
+    photos: [
+      { url: '/images/demo-profile.jpg', isMain: true }
+    ],
+    preferences: {
+      lookingFor: ['Male'],
+      ageRange: { min: 25, max: 40 },
+      distance: 25,
+      relationshipType: 'Long-term relationship'
     }
-  }
-];
-
-const mockAuthService = {
-  login: async (email, password) => {
-    const user = mockUsers.find(u => u.email === email && u.password === password);
-    if (user) {
-      const { password, ...userWithoutPassword } = user;
-      return { success: true, user: userWithoutPassword };
-    }
-    return { success: false, error: 'Invalid email or password' };
-  },
-  
-  register: async (userData) => {
-    // Check if user already exists
-    if (mockUsers.some(u => u.email === userData.email)) {
-      return { success: false, error: 'Email already in use' };
-    }
-    
-    // Create new user
-    const newUser = {
-      id: Date.now().toString(),
-      ...userData,
-      profile: {
-        // Default profile
-      }
-    };
-    
-    mockUsers.push(newUser);
-    const { password, ...userWithoutPassword } = newUser;
-    return { success: true, user: userWithoutPassword };
-  },
-  
-  updateProfile: async (userId, profileData) => {
-    const userIndex = mockUsers.findIndex(u => u.id === userId);
-    if (userIndex !== -1) {
-      mockUsers[userIndex].profile = {
-        ...mockUsers[userIndex].profile,
-        ...profileData
-      };
-      return { success: true, profile: mockUsers[userIndex].profile };
-    }
-    return { success: false, error: 'User not found' };
   }
 };
 
-export const AuthProvider = ({ children }) => {
+// Provider component that wraps your app and makes auth object available to any child component that calls useAuth().
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Check local storage for saved user
-    if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-      setLoading(false);
+    // Check if user is stored in local storage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
+    setLoading(false);
   }, []);
   
+  // Login function - for demo, we'll use a mock user
   const login = async (email, password) => {
-    setLoading(true);
     try {
-      const result = await mockAuthService.login(email, password);
-      if (result.success) {
-        setUser(result.user);
-        localStorage.setItem('user', JSON.stringify(result.user));
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For demo purposes, hardcode credentials check
+      if (email === 'demo@example.com' && password === 'password') {
+        setUser(mockUser);
+        localStorage.setItem('user', JSON.stringify(mockUser));
         return { success: true };
       }
-      return { success: false, error: result.error };
+      
+      return { 
+        success: false, 
+        error: 'Invalid email or password' 
+      };
     } catch (error) {
-      return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
+      console.error('Login error:', error);
+      return { 
+        success: false, 
+        error: 'An error occurred during login' 
+      };
     }
   };
   
-  const register = async (userData) => {
-    setLoading(true);
-    try {
-      const result = await mockAuthService.register(userData);
-      if (result.success) {
-        setUser(result.user);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        return { success: true };
-      }
-      return { success: false, error: result.error };
-    } catch (error) {
-      return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
   
-  const updateProfile = async (profileData) => {
-    if (!user) return { success: false, error: 'Not authenticated' };
-    
+  // Register function - for demo, we'll just return success
+  const register = async (userData) => {
     try {
-      const result = await mockAuthService.updateProfile(user.id, profileData);
-      if (result.success) {
-        setUser({ ...user, profile: result.profile });
-        localStorage.setItem('user', JSON.stringify({ ...user, profile: result.profile }));
-        return { success: true };
-      }
-      return { success: false, error: result.error };
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create a demo user based on registration data
+      const newUser = {
+        ...mockUser,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+      };
+      
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      
+      return { success: true };
     } catch (error) {
-      return { success: false, error: error.message };
+      console.error('Registration error:', error);
+      return { 
+        success: false, 
+        error: 'An error occurred during registration' 
+      };
     }
   };
   
-  return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  // Update profile function - for demo, we'll just update the local state
+  const updateProfile = (profileData) => {
+    if (!user) return { success: false };
+    
+    const updatedUser = {
+      ...user,
+      profile: {
+        ...user.profile,
+        ...profileData
+      }
+    };
+    
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    return { success: true };
+  };
+  
+  // Make the context object:
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+    updateProfile
+  };
+  
+  // Return the provider with the value:
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
-export const useAuth = () => useContext(AuthContext);
+// Hook for child components to get the auth object and re-render when it changes.
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

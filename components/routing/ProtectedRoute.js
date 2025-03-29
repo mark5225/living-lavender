@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
+import styles from './protected-route.module.css';
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -16,13 +17,9 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-2">Loading...</p>
-        </div>
+      <div className={styles.loaderContainer}>
+        <div className={styles.spinner}></div>
+        <p className={styles.loaderText}>Loading...</p>
       </div>
     );
   }
