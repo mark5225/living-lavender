@@ -1,39 +1,52 @@
+// models/user.js
+import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { connectDB } from '../lib/mongodb';
 import bcrypt from 'bcryptjs';
 
 class User {
-  static async findById(id) {
-    try {
-      const { db } = await connectDB();
-      const user = await db.collection('users').findOne({ _id: new ObjectId(id) });
-      return user;
-    } catch (error) {
-      console.error('Error finding user by ID:', error);
-      return null;
-    }
-  }
-
+  /**
+   * Find a user by email
+   * @param {string} email 
+   * @returns {Promise<Object|null>} User object or null
+   */
   static async findByEmail(email) {
     try {
-      const { db } = await connectDB();
-      const user = await db.collection('users').findOne({ email: email.toLowerCase() });
-      return user;
+      const db = await connectDB();
+      return await db.collection('users').findOne({ email: email.toLowerCase() });
     } catch (error) {
       console.error('Error finding user by email:', error);
-      return null;
+      throw error;
     }
   }
 
+  /**
+   * Find a user by ID
+   * @param {string} id 
+   * @returns {Promise<Object|null>} User object or null
+   */
+  static async findById(id) {
+    try {
+      const db = await connectDB();
+      return await db.collection('users').findOne({ _id: new ObjectId(id) });
+    } catch (error) {
+      console.error('Error finding user by ID:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new user
+   * @param {Object} userData 
+   * @returns {Promise<Object>} Created user object
+   */
   static async create(userData) {
     try {
-      const { db } = await connectDB();
+      const db = await connectDB();
       
       // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
       
-      // Create new user object
+      // Prepare user data
       const newUser = {
         email: userData.email.toLowerCase(),
         password: hashedPassword,
@@ -41,67 +54,83 @@ class User {
         lastName: userData.lastName,
         createdAt: new Date(),
         profile: {
-          photos: [],
+          birthdate: userData.birthdate || null,
+          gender: userData.gender || null,
+          location: userData.location || null,
+          bio: userData.bio || null,
+          occupation: userData.occupation || null,
+          education: userData.education || null,
+          interests: userData.interests || [],
+          photos: userData.photos || [],
           preferences: {
-            lookingFor: [],
-            ageRange: { min: 18, max: 50 },
-            distance: 50
+            lookingFor: userData.lookingFor || [],
+            ageRange: userData.ageRange || { min: 18, max: 50 },
+            distance: userData.distance || 50,
+            relationshipType: userData.relationshipType || null
           }
         }
       };
       
-      // Insert into database
+      // Insert user into database
       const result = await db.collection('users').insertOne(newUser);
       
-      // Return the created user with the generated ID
-      return { ...newUser, _id: result.insertedId };
+      // Return created user
+      return { 
+        ...newUser, 
+        _id: result.insertedId 
+      };
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
     }
   }
 
+  /**
+   * Update user profile
+   * @param {string} userId 
+   * @param {Object} profileData 
+   * @returns {Promise<boolean>} Success status
+   */
   static async updateProfile(userId, profileData) {
     try {
-      const { db } = await connectDB();
+      const db = await connectDB();
       
-      // Prepare update object
-      const updateData = {};
-      
-      // Handle different profile properties
-      if (profileData.firstName) updateData.firstName = profileData.firstName;
-      if (profileData.lastName) updateData.lastName = profileData.lastName;
-      
-      // Update profile object properties
-      if (profileData.birthdate) updateData['profile.birthdate'] = profileData.birthdate;
-      if (profileData.gender) updateData['profile.gender'] = profileData.gender;
-      if (profileData.location) updateData['profile.location'] = profileData.location;
-      if (profileData.bio) updateData['profile.bio'] = profileData.bio;
-      if (profileData.occupation) updateData['profile.occupation'] = profileData.occupation;
-      if (profileData.education) updateData['profile.education'] = profileData.education;
-      if (profileData.interests) updateData['profile.interests'] = profileData.interests;
-      
-      // Update preferences if provided
-      if (profileData.preferences) {
-        if (profileData.preferences.lookingFor) updateData['profile.preferences.lookingFor'] = profileData.preferences.lookingFor;
-        if (profileData.preferences.ageRange) updateData['profile.preferences.ageRange'] = profileData.preferences.ageRange;
-        if (profileData.preferences.distance) updateData['profile.preferences.distance'] = profileData.preferences.distance;
-        if (profileData.preferences.relationshipType) updateData['profile.preferences.relationshipType'] = profileData.preferences.relationshipType;
-      }
-      
-      // Update photos if provided
-      if (profileData.photos) updateData['profile.photos'] = profileData.photos;
-      
-      // Update user
+      // Update profile fields
       const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId) },
-        { $set: updateData }
+        { $set: { profile: profileData } }
       );
       
       return result.modifiedCount > 0;
     } catch (error) {
-      console.error('Error updating profile:', error);
-      return false;
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update user password
+   * @param {string} userId 
+   * @param {string} newPassword 
+   * @returns {Promise<boolean>} Success status
+   */
+  static async updatePassword(userId, newPassword) {
+    try {
+      const db = await connectDB();
+      
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update password
+      const result = await db.collection('users').updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { password: hashedPassword } }
+      );
+      
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw error;
     }
   }
 }
