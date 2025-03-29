@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './Header.module.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -54,12 +56,33 @@ const Header = () => {
               </li>
             </ul>
             <div className={styles.navButtons}>
-              <Link href="/login" className="btn btn-outline">
-                Log In
-              </Link>
-              <Link href="/signup" className="btn btn-primary">
-                Sign Up
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard" className={styles.navLink}>
+                    Dashboard
+                  </Link>
+                  <div className={styles.userMenu}>
+                    <Link href="/profile" className="btn btn-outline">
+                      Profile
+                    </Link>
+                    <button 
+                      onClick={() => logout()} 
+                      className="btn btn-primary"
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="btn btn-outline">
+                    Log In
+                  </Link>
+                  <Link href="/signup" className="btn btn-primary">
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
 

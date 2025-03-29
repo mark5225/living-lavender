@@ -1,0 +1,257 @@
+.profileContainer {
+    min-height: 100vh;
+    background-color: var(--background);
+    padding: 2rem 0;
+  }
+  
+  .profileHeader {
+    margin-bottom: 1.5rem;
+  }
+  
+  .profileHeader h1 {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .profileHeader p {
+    color: var(--text-light);
+  }
+  
+  .profileGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+  }
+  
+  .profileSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .profileCard {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .profileImageContainer {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .profileInitial {
+    width: 128px;
+    height: 128px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+  }
+  
+  .profileInfo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .verifiedBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    color: var(--success);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profileInfo h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  
+  .profileMeta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.875rem;
+  }
+  
+  .profileActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .profileActions a, 
+  .profileActions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .detailsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .detailItem h4 {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+  }
+  
+  .detailContent {
+    font-weight: 500;
+    color: var(--text);
+  }
+  
+  .detailsCard {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  
+  .detailsNav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .detailsNavItem {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .detailsNavItem:hover {
+    color: var(--primary);
+  }
+  
+  .detailsNavItem.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: -1px;
+  }
+  
+  .detailsContent {
+    padding: 1.5rem;
+  }
+  
+  .detailsTab {
+    display: none;
+  }
+  
+  .detailsTab.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .detailsSection {
+    margin-bottom: 2rem;
+  }
+  
+  .detailsSection h3 {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .bioText {
+    line-height: 1.6;
+  }
+  
+  .emptyContent {
+    color: var(--text-light);
+    font-style: italic;
+  }
+  
+  .interestsTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .interestTag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--background);
+    color: var(--primary);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+  }
+  
+  .photoTab {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  
+  .photoItem {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+  
+  .mainPhotoLabel {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background-color: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+  }
+  
+  @media (max-width: 992px) {
+    .profileGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .photoTab {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .detailsNav {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .detailsNavItem {
+      white-space: nowrap;
+      padding: 1rem 1rem;
+    }
+    
+    .detailsGrid {
+      grid-template-columns: 1fr;
+    }
+  }

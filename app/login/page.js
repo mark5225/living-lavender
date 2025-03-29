@@ -1,15 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './login.module.css';
-import { useAuth } from '../../contexts/AuthContext';  // This is the corrected import path
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,12 +34,17 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const result = await login(formData.email, formData.password);
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+        callbackUrl
+      });
       
-      if (!result.success) {
+      if (result.error) {
         setError(result.error || 'Invalid email or password. Please try again.');
       } else {
-        router.push('/dashboard'); // Redirect to dashboard after successful login
+        router.push(callbackUrl);
       }
     } catch (error) {
       setError('An error occurred during login. Please try again.');
@@ -47,9 +54,15 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = (provider) => {
-    // Social login functionality will be implemented later
-    alert(`${provider} login will be implemented with real backend integration.`);
+  const handleSocialLogin = async (provider) => {
+    setIsLoading(true);
+    try {
+      await signIn(provider, { callbackUrl });
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+      setError(`An error occurred during ${provider} login.`);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -137,6 +150,7 @@ export default function LoginPage() {
               className={styles.socialButton}
               onClick={() => handleSocialLogin('facebook')}
               type="button"
+              disabled={isLoading}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -147,6 +161,7 @@ export default function LoginPage() {
               className={styles.socialButton}
               onClick={() => handleSocialLogin('google')}
               type="button"
+              disabled={isLoading}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path>

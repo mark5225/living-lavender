@@ -1,13 +1,13 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function ProfileLayout({ children }) {
   const pathname = usePathname();
   
-  // Add specific class to body based on the current route
-  // This helps with styling specific pages
-  if (typeof document !== 'undefined') {
+  useEffect(() => {
+    // Add specific class to body based on the current route
     if (pathname.includes('/profile/edit')) {
       document.body.classList.add('profile-edit-page');
     } else {
@@ -18,11 +18,7 @@ export default function ProfileLayout({ children }) {
     return () => {
       document.body.classList.remove('profile-edit-page', 'profile-page');
     };
-  }
+  }, [pathname]);
   
-  return (
-    <>
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

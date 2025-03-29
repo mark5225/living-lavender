@@ -1,142 +1,100 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
-// Create the context
 const AuthContext = createContext();
 
-// Mock user data for demo purposes
-const mockUser = {
-  id: '123456',
-  firstName: 'Jane',
-  lastName: 'Doe',
-  email: 'jane.doe@example.com',
-  profile: {
-    bio: 'I love hiking, reading, and trying new restaurants. Looking for someone who shares my passion for adventure!',
-    location: 'San Francisco, CA',
-    birthdate: '1990-01-15',
-    gender: 'female',
-    occupation: 'Software Engineer',
-    education: 'Master\'s Degree',
-    interests: ['Hiking', 'Reading', 'Cooking', 'Travel', 'Photography'],
-    photos: [
-      { url: '/images/demo-profile.jpg', isMain: true }
-    ],
-    preferences: {
-      lookingFor: ['Male'],
-      ageRange: { min: 25, max: 40 },
-      distance: 25,
-      relationshipType: 'Long-term relationship'
-    }
-  }
-};
-
-// Provider component that wraps your app and makes auth object available to any child component that calls useAuth().
 export function AuthProvider({ children }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    // Check if user is stored in local storage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // If session exists, set user data
+    if (session?.user) {
+      setUser(session.user);
+    } else {
+      setUser(null);
     }
-    setLoading(false);
-  }, []);
-  
-  // Login function - for demo, we'll use a mock user
+    
+    setLoading(status === 'loading');
+  }, [session, status]);
+
+  // Login function
   const login = async (email, password) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password
+      });
       
-      // For demo purposes, hardcode credentials check
-      if (email === 'demo@example.com' && password === 'password') {
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        return { success: true };
+      if (result?.error) {
+        return { success: false, error: result.error };
       }
       
-      return { 
-        success: false, 
-        error: 'Invalid email or password' 
-      };
+      // Reload session to get updated user data
+      // (Fetch user profile if needed)
+      return { success: true };
     } catch (error) {
       console.error('Login error:', error);
       return { 
         success: false, 
-        error: 'An error occurred during login' 
+        error: error.message || 'An error occurred during login.' 
       };
     }
   };
-  
+
   // Logout function
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const logout = async () => {
+    await signOut({ redirect: false });
   };
-  
-  // Register function - for demo, we'll just return success
-  const register = async (userData) => {
+
+  // Update profile function
+  const updateProfile = async (profileData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileData)
+      });
       
-      // Create a demo user based on registration data
-      const newUser = {
-        ...mockUser,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-      };
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
       
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      // Update local user state with new profile data
+      setUser(prevUser => ({
+        ...prevUser,
+        profile: profileData
+      }));
       
       return { success: true };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Error updating profile:', error);
       return { 
         success: false, 
-        error: 'An error occurred during registration' 
+        error: error.message || 'An error occurred while updating your profile.' 
       };
     }
   };
-  
-  // Update profile function - for demo, we'll just update the local state
-  const updateProfile = (profileData) => {
-    if (!user) return { success: false };
-    
-    const updatedUser = {
-      ...user,
-      profile: {
-        ...user.profile,
-        ...profileData
-      }
-    };
-    
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    
-    return { success: true };
-  };
-  
-  // Make the context object:
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    register,
-    updateProfile
-  };
-  
-  // Return the provider with the value:
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, updateProfile }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-// Hook for child components to get the auth object and re-render when it changes.
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+// Custom hook to use the auth context
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

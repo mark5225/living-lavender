@@ -51,6 +51,12 @@
     padding-bottom: 0.25rem;
   }
   
+  .userMenu {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
   .navLink:hover {
     color: var(--primary);
   }
