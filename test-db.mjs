@@ -1,7 +1,9 @@
-// test-db.js
-require('dotenv').config();
-const { connectDB, disconnectDB } = require('./lib/mongodb');
-const User = require('./models/user');
+// test-db.mjs
+import dotenv from 'dotenv';
+import { connectDB, disconnectDB } from './lib/mongodb.js';
+import User from './models/user.js';
+
+dotenv.config();
 
 async function testDatabaseConnection() {
   try {
