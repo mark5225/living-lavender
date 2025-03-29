@@ -1,9 +1,57 @@
+// app/api/auth/signup/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import User from '@/models/User';
 
-// Get user profile
+// Create new user account
+export async function POST(request) {
+  try {
+    const data = await request.json();
+    
+    // Validate required fields
+    if (!data.email || !data.password || !data.firstName || !data.lastName) {
+      return NextResponse.json(
+        { message: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+    
+    // Check if user already exists
+    const existingUser = await User.findByEmail(data.email);
+    
+    if (existingUser) {
+      return NextResponse.json(
+        { message: 'User with this email already exists' },
+        { status: 409 }
+      );
+    }
+    
+    // Create new user
+    const newUser = await User.create({
+      email: data.email,
+      password: data.password,
+      firstName: data.firstName,
+      lastName: data.lastName
+    });
+    
+    // Remove password from response
+    const { password, ...userWithoutPassword } = newUser;
+    
+    return NextResponse.json(
+      { message: 'User created successfully', user: userWithoutPassword },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error in signup:', error);
+    return NextResponse.json(
+      { message: 'Error creating user', error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// Get user profile (protected route)
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -24,6 +72,7 @@ export async function GET() {
       );
     }
     
+    // Remove password from response
     const { password, ...userWithoutPassword } = user;
     
     return NextResponse.json(
@@ -39,8 +88,8 @@ export async function GET() {
   }
 }
 
-// Update user profile
-export async function PUT(req) {
+// Update user profile (protected route)
+export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -51,7 +100,7 @@ export async function PUT(req) {
       );
     }
     
-    const profileData = await req.json();
+    const profileData = await request.json();
     
     const updated = await User.updateProfile(session.user.id, profileData);
     
