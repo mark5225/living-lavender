@@ -18,8 +18,10 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",  // Add baseUrl to help resolve the paths correctly
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/models/*": ["models/*"]  // Explicitly add the models path alias
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

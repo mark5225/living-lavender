@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import User from '@/models/User';
+import User from '@/models/user';
 
 // Create new user account
 export async function POST(request) {
@@ -18,7 +18,7 @@ export async function POST(request) {
     }
     
     // Check if user already exists
-    const existingUser = await User.findByEmail(data.email);
+    const existing = await User.findByEmail(data.email);
     
     if (existingUser) {
       return NextResponse.json(
