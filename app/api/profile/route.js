@@ -1,4 +1,4 @@
-// app/profile/route.js
+// app/api/profile/route.js
 import { NextResponse } from 'next/server';
 
 // This file is for handling the API routes for the profile section

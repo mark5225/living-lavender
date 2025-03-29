@@ -387,6 +387,37 @@
     color: var(--danger);
     margin-top: 0.5rem;
   }
+
+  .makeMainPhoto {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.2s ease;
+  }
+  
+  .makeMainPhoto:hover {
+    background-color: var(--primary);
+    transform: scale(1.1);
+  }
+
+  .distanceContainer {
+    margin-bottom: 1.5rem;
+  }
+  
+  .distanceContainer .rangeSlider {
+    margin-bottom: 0.5rem;
+  }
   
   @media (max-width: 992px) {
     .formRow {
@@ -427,10 +458,3 @@
 
   /* Add this to your profile-edit.module.css file */
 
-.distanceContainer {
-    margin-bottom: 1.5rem;
-  }
-  
-  .distanceContainer .rangeSlider {
-    margin-bottom: 0.5rem;
-  }
