@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import styles from './OnboardingWizard.module.css';
 
 // Import step components
@@ -14,14 +12,15 @@ import PhotoUploadStep from './steps/PhotoUploadStep';
 import CompleteStep from './steps/CompleteStep';
 
 const OnboardingWizard = () => {
-  const { data: session } = useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [userData, setUserData] = useState(null);
+  
   const [formData, setFormData] = useState({
     // Basic Info
-    firstName: session?.user?.firstName || '',
+    firstName: '',
     lastName: '',
     birthdate: '',
     gender: '',
@@ -42,6 +41,26 @@ const OnboardingWizard = () => {
     // Photos
     photos: []
   });
+
+  // Load user data from localStorage
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUserData(parsedUser);
+        
+        // Pre-fill form data with user info
+        setFormData(prevData => ({
+          ...prevData,
+          firstName: parsedUser.firstName || '',
+          lastName: parsedUser.lastName || ''
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  }, []);
 
   const totalSteps = 5;
 
@@ -99,62 +118,31 @@ const OnboardingWizard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (currentStep === totalSteps) {
       try {
         setIsSubmitting(true);
         setSubmitError('');
         
-        // Handle photo uploads
-        const photoUrls = [];
-        if (formData.photos && formData.photos.length > 0) {
-          for (const photo of formData.photos) {
-            if (photo.file) { // Only upload if it's a file, not a URL
-              const photoFormData = new FormData();
-              photoFormData.append('file', photo.file);
-              
-              const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
-                body: photoFormData,
-              });
-              
-              if (!uploadRes.ok) {
-                throw new Error('Failed to upload image');
-              }
-              
-              const imageData = await uploadRes.json();
-              photoUrls.push({ url: imageData.url });
-            } else if (photo.url) {
-              // If it's already a URL (from a previous upload), keep it
-              photoUrls.push({ url: photo.url });
-            }
-          }
+        // Update user profile in localStorage
+        if (userData) {
+          const updatedUser = {
+            ...userData,
+            profile: formData
+          };
+          
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          
+          // Add artificial delay to simulate API call
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1000);
+        } else {
+          throw new Error('User data not found');
         }
-        
-        // Prepare profile data
-        const profileData = {
-          ...formData,
-          photos: photoUrls
-        };
-        
-        // Save profile data
-        const response = await fetch('/api/profiles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(profileData),
-        });
-        
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'Failed to save profile');
-        }
-        
-        // Redirect to dashboard
-        router.push('/dashboard');
       } catch (error) {
         console.error('Error submitting form:', error);
-        setSubmitError(error.message || 'Something went wrong');
+        setSubmitError(error.message || 'Something went wrong. Please try again.');
       } finally {
         setIsSubmitting(false);
       }
@@ -210,19 +198,25 @@ const OnboardingWizard = () => {
     <div className={styles.wizardContainer}>
       <div className={styles.wizardHeader}>
         <div className={styles.logo}>
-          <Image 
-            src="/images/logo.svg" 
-            alt="Living Lavender Logo" 
-            width={40} 
-            height={40} 
-          />
+          <svg 
+            width="40" 
+            height="40" 
+            viewBox="0 0 40 40" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="40" height="40" rx="8" fill="#7464A0" />
+            <path d="M20 10C14.486 10 10 14.486 10 20C10 25.514 14.486 30 20 30C25.514 30 30 25.514 30 20C30 14.486 25.514 10 20 10ZM20 28C15.589 28 12 24.411 12 20C12 15.589 15.589 12 20 12C24.411 12 28 15.589 28 20C28 24.411 24.411 28 20 28Z" fill="white"/>
+            <path d="M20 15C18.346 15 17 16.346 17 18C17 19.654 18.346 21 20 21C21.654 21 23 19.654 23 18C23 16.346 21.654 15 20 15Z" fill="white"/>
+            <path d="M20 22C16.667 22 14 24.239 14 27H26C26 24.239 23.333 22 20 22Z" fill="white"/>
+          </svg>
           <span>Living Lavender</span>
         </div>
         <div className={styles.progressContainer}>
           {Array.from({ length: totalSteps }, (_, i) => (
             <div 
               key={i} 
-              className={`${styles.progressStep} ${currentStep > i ? styles.completed : ''} ${currentStep === i + 1 ? styles.active : ''}`}
+              className={`${styles.progressStep} ${currentStep > i + 1 ? styles.completed : ''} ${currentStep === i + 1 ? styles.active : ''}`}
             >
               <div className={styles.progressDot}>{i + 1}</div>
               <div className={styles.progressLabel}>
@@ -245,7 +239,7 @@ const OnboardingWizard = () => {
 
       <div className={styles.wizardContent}>
         {submitError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className={styles.errorMessage}>
             {submitError}
           </div>
         )}

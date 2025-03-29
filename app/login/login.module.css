@@ -1,190 +1,190 @@
 .loginContainer {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background-color: var(--background);
-    position: relative;
-  }
-  
-  .loginContainer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-      radial-gradient(var(--primary-hover) 1px, transparent 1px),
-      radial-gradient(var(--primary-hover) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-position: 0 0, 15px 15px;
-    opacity: 0.1;
-    z-index: 0;
-  }
-  
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--background);
+  position: relative;
+}
+
+.loginContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(var(--primary-hover) 1px, transparent 1px),
+    radial-gradient(var(--primary-hover) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.logoText {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin: 0;
+}
+
+.loginHeader p {
+  color: var(--text-light);
+}
+
+.loginForm {
+  margin-bottom: 2rem;
+}
+
+.loginOptions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.rememberMe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rememberMe input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.forgotPassword {
+  color: var(--primary);
+  font-size: 0.875rem;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+}
+
+.errorMessage {
+  background-color: rgba(217, 83, 79, 0.1);
+  color: #d9534f;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.signupPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.socialLogin {
+  text-align: center;
+}
+
+.socialLogin p {
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.socialLogin p::before,
+.socialLogin p::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.socialLogin p::before {
+  left: 0;
+}
+
+.socialLogin p::after {
+  right: 0;
+}
+
+.socialButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.socialButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.socialButton:hover {
+  background-color: var(--card-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.socialButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Media Queries */
+@media (max-width: 576px) {
   .loginCard {
-    width: 100%;
-    max-width: 480px;
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    padding: 2.5rem;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .loginHeader {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  
-  .logoText {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 1.5rem;
-    color: var(--primary);
-    margin: 0;
-  }
-  
-  .loginHeader p {
-    color: var(--text-light);
-  }
-  
-  .loginForm {
-    margin-bottom: 2rem;
+    padding: 1.5rem;
   }
   
   .loginOptions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .rememberMe {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .rememberMe input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-  }
-  
-  .forgotPassword {
-    color: var(--primary);
-    font-size: 0.875rem;
-  }
-  
-  .loginButton {
-    width: 100%;
-    padding: 0.75rem;
-    margin-top: 1rem;
-  }
-  
-  .errorMessage {
-    background-color: rgba(217, 83, 79, 0.1);
-    color: #d9534f;
-    padding: 0.75rem;
-    border-radius: var(--radius-md);
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-  
-  .signupPrompt {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-  
-  .socialLogin {
-    text-align: center;
-  }
-  
-  .socialLogin p {
-    color: var(--text-light);
-    margin-bottom: 1rem;
-    position: relative;
-  }
-  
-  .socialLogin p::before,
-  .socialLogin p::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 30%;
-    height: 1px;
-    background-color: var(--border);
-  }
-  
-  .socialLogin p::before {
-    left: 0;
-  }
-  
-  .socialLogin p::after {
-    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
   
   .socialButtons {
-    display: flex;
-    gap: 1rem;
+    flex-direction: column;
   }
-  
-  .socialButton {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background-color: var(--background);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text);
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-    transition: var(--transition-fast);
-  }
-  
-  .socialButton:hover {
-    background-color: var(--card-bg);
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-  
-  .socialButton svg {
-    width: 18px;
-    height: 18px;
-  }
-  
-  /* Media Queries */
-  @media (max-width: 576px) {
-    .loginCard {
-      padding: 1.5rem;
-    }
-    
-    .loginOptions {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-    
-    .socialButtons {
-      flex-direction: column;
-    }
-  }
+}

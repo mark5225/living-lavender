@@ -1,16 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import styles from './login.module.css';
-import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   
   const [formData, setFormData] = useState({
     email: '',
@@ -33,36 +29,62 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setError('Email and password are required');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: formData.email,
-        password: formData.password,
-        callbackUrl
-      });
+      // For a demo, we'll check if there's a matching user in localStorage
+      const storedUserJson = localStorage.getItem('user');
       
-      if (result.error) {
-        setError(result.error || 'Invalid email or password. Please try again.');
-      } else {
-        router.push(callbackUrl);
+      if (storedUserJson) {
+        const storedUser = JSON.parse(storedUserJson);
+        
+        // In a real app, you would verify passwords with bcrypt or similar
+        // For this demo, we'll just check if the email matches
+        if (storedUser.email === formData.email) {
+          // Update authentication status
+          storedUser.isAuthenticated = true;
+          localStorage.setItem('user', JSON.stringify(storedUser));
+          
+          // Redirect to dashboard
+          router.push('/dashboard');
+          return;
+        }
       }
+      
+      // If we got here, no matching user was found
+      setError('Invalid email or password. Please try again.');
     } catch (error) {
-      setError('An error occurred during login. Please try again.');
       console.error('Login error:', error);
+      setError('An error occurred during login. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider) => {
+  const handleSocialLogin = (provider) => {
     setIsLoading(true);
-    try {
-      await signIn(provider, { callbackUrl });
-    } catch (error) {
-      console.error(`${provider} login error:`, error);
-      setError(`An error occurred during ${provider} login.`);
-      setIsLoading(false);
-    }
+    
+    // For demo purposes, simulate a social login
+    setTimeout(() => {
+      // Create a demo user
+      const demoUser = {
+        id: `demo-${provider}-${Date.now()}`,
+        email: `demo-${provider}@example.com`,
+        firstName: 'Demo',
+        lastName: 'User',
+        isAuthenticated: true
+      };
+      
+      localStorage.setItem('user', JSON.stringify(demoUser));
+      
+      // Redirect to dashboard
+      router.push('/dashboard');
+    }, 1000);
   };
 
   return (
@@ -70,12 +92,18 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.loginHeader}>
           <div className={styles.logo}>
-            <Image 
-              src="/images/logo.svg" 
-              alt="Living Lavender Logo" 
-              width={40} 
-              height={40} 
-            />
+            <svg 
+              width="40" 
+              height="40" 
+              viewBox="0 0 40 40" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="40" height="40" rx="8" fill="#7464A0" />
+              <path d="M20 10C14.486 10 10 14.486 10 20C10 25.514 14.486 30 20 30C25.514 30 30 25.514 30 20C30 14.486 25.514 10 20 10ZM20 28C15.589 28 12 24.411 12 20C12 15.589 15.589 12 20 12C24.411 12 28 15.589 28 20C28 24.411 24.411 28 20 28Z" fill="white"/>
+              <path d="M20 15C18.346 15 17 16.346 17 18C17 19.654 18.346 21 20 21C21.654 21 23 19.654 23 18C23 16.346 21.654 15 20 15Z" fill="white"/>
+              <path d="M20 22C16.667 22 14 24.239 14 27H26C26 24.239 23.333 22 20 22Z" fill="white"/>
+            </svg>
             <h1 className={styles.logoText}>Living Lavender</h1>
           </div>
           <p>Sign in to your account</p>

@@ -1,177 +1,111 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '../../contexts/AuthContext';
-import ProtectedRoute from '../../components/routing/ProtectedRoute';
 import styles from './dashboard.module.css';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState(null);
+  const router = useRouter();
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    if (user) {
-      // User is already authenticated, we can use their profile from the context
-      setProfile(user.profile || {});
-      setLoading(false);
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData.isAuthenticated) {
+          setUser(userData);
+        } else {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        router.push('/login');
+      }
+    } else {
+      router.push('/login');
     }
-  }, [user]);
-  
+    
+    setLoading(false);
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    router.push('/login');
+  };
+
   if (loading) {
     return (
-      <div className={styles.loader}>
+      <div className={styles.loadingContainer}>
         <div className={styles.spinner}></div>
-        <p>Loading your profile...</p>
+        <p>Loading dashboard...</p>
       </div>
     );
   }
-  
+
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
+
   return (
-    <ProtectedRoute>
-      <div className={styles.dashboardContainer}>
-        <div className="container">
-          <div className={styles.dashboardHeader}>
-            <h1>Welcome, {user?.firstName || 'User'}</h1>
-            <p>Manage your profile and connections</p>
+    <div className={styles.dashboardContainer}>
+      <div className="container">
+        <div className={styles.dashboardHeader}>
+          <h1>Welcome, {user.firstName || 'User'}</h1>
+          <p>Your profile is now set up and you're ready to start connecting!</p>
+        </div>
+        
+        <div className={styles.dashboardContent}>
+          <div className={styles.cardGrid}>
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <h2>Discover Matches</h2>
+              <p>Browse through potential matches and find your perfect connection.</p>
+              <Link href="/matches" className="btn btn-primary">Start Browsing</Link>
+            </div>
+            
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <h2>Complete Your Profile</h2>
+              <p>Add more details to your profile to increase your chances of finding a match.</p>
+              <Link href="/profile/edit" className="btn btn-outline">Edit Profile</Link>
+            </div>
+            
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <h2>Messages</h2>
+              <p>Check your messages and start conversations with your matches.</p>
+              <Link href="/messages" className="btn btn-outline">View Messages</Link>
+            </div>
           </div>
           
-          {profile ? (
-            <div className={styles.dashboardGrid}>
-              <div>
-                <div className={styles.profileCard}>
-                  <div className={styles.profileInfo}>
-                    {profile.photos && profile.photos.length > 0 ? (
-                      <div className={styles.profileImageContainer}>
-                        <Image 
-                          src={profile.photos[0].url} 
-                          alt="Profile" 
-                          fill
-                          style={{ objectFit: 'cover' }}
-                        />
-                      </div>
-                    ) : (
-                      <div className={styles.profileInitial}>
-                        {user.firstName?.charAt(0) || '?'}
-                      </div>
-                    )}
-                    <h2>{user.firstName} {user.lastName}</h2>
-                    <p>{profile.location || 'No location set'}</p>
-                  </div>
-                  
-                  <div className={styles.completionContainer}>
-                    <h3>Profile Completion</h3>
-                    <div className={styles.progressBar}>
-                      <div 
-                        className={styles.progressFill} 
-                        style={{ width: `${profile.isComplete ? 100 : 70}%` }}
-                      ></div>
-                    </div>
-                    <p className={styles.completionText}>
-                      {profile.isComplete 
-                        ? 'Your profile is complete!' 
-                        : 'Your profile is almost complete. Add more details to increase your chances of finding a match.'}
-                    </p>
-                  </div>
-                  
-                  <Link 
-                    href="/profile/edit" 
-                    className={`btn btn-outline ${styles.editProfileBtn}`}
-                  >
-                    Edit Profile
-                  </Link>
-                </div>
-              </div>
-              
-              <div>
-                <div className={styles.contentCard}>
-                  <h2>About Me</h2>
-                  {profile.bio ? (
-                    <p>{profile.bio}</p>
-                  ) : (
-                    <p className={styles.noBio}>No bio added yet</p>
-                  )}
-                  
-                  {profile.interests && profile.interests.length > 0 && (
-                    <div className={styles.interestsSection}>
-                      <h3>Interests</h3>
-                      <div className={styles.interestsTags}>
-                        {profile.interests.map((interest, index) => (
-                          <span 
-                            key={index} 
-                            className={styles.interestTag}
-                          >
-                            {interest}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div className={styles.contentCard}>
-                  <h2>Potential Matches</h2>
-                  <p>
-                    We're working on finding your perfect matches based on your preferences.
-                    Check back soon to see your matches!
-                  </p>
-                  
-                  <div className={styles.preferencesBox}>
-                    <h3>Your Preferences</h3>
-                    <div className={styles.preferencesGrid}>
-                      <div className={styles.preferenceItem}>
-                        <p>Looking for</p>
-                        <p>
-                          {profile.preferences?.lookingFor && profile.preferences.lookingFor.length > 0
-                            ? profile.preferences.lookingFor.join(', ')
-                            : 'Not specified'}
-                        </p>
-                      </div>
-                      <div className={styles.preferenceItem}>
-                        <p>Age Range</p>
-                        <p>
-                          {profile.preferences?.ageRange
-                            ? `${profile.preferences.ageRange.min} - ${profile.preferences.ageRange.max}`
-                            : '18 - 50'}
-                        </p>
-                      </div>
-                      <div className={styles.preferenceItem}>
-                        <p>Distance</p>
-                        <p>
-                          {profile.preferences?.distance
-                            ? `${profile.preferences.distance} miles`
-                            : '50 miles'}
-                        </p>
-                      </div>
-                      <div className={styles.preferenceItem}>
-                        <p>Relationship Type</p>
-                        <p>
-                          {profile.preferences?.relationshipType || 'Not specified'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.completeProfileCard}>
-              <h2>Complete Your Profile</h2>
-              <p>
-                You haven't completed your profile yet. Tell us more about yourself to start finding matches!
-              </p>
-              <Link
-                href="/signup"
-                className="btn btn-primary"
-              >
-                Complete Profile
-              </Link>
-            </div>
-          )}
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Log Out
+          </button>
         </div>
       </div>
-    </ProtectedRoute>
+    </div>
   );
 }

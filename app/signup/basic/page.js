@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
-import styles from '../signup.module.css';
+import styles from '../signup.module.css'; // This should now work
 
 export default function BasicSignupPage() {
   const [formData, setFormData] = useState({
@@ -45,36 +43,23 @@ export default function BasicSignupPage() {
     setIsLoading(true);
     
     try {
-      // Create account
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+      // For demonstration, we'll simulate creating an account
+      // In a real app, you'd call your API endpoint here
       
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
-      }
-      
-      // Auto-login the user
-      const result = await signIn('credentials', {
-        redirect: false,
+      // Store user data in localStorage for the demo
+      localStorage.setItem('user', JSON.stringify({
+        id: 'temp-' + Date.now(),
         email: formData.email,
-        password: formData.password
-      });
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        isAuthenticated: true
+      }));
       
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      
-      // Redirect to onboarding
-      router.push('/signup');
+      // Navigate to onboarding
+      router.push('/onboarding');
     } catch (error) {
-      setError(error.message);
+      console.error('Registration error:', error);
+      setError(error.message || 'An error occurred during registration. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -83,31 +68,34 @@ export default function BasicSignupPage() {
   return (
     <div className={styles.signupContainer}>
       <div className="container">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-          <div className="text-center mb-6">
+        <div className={styles.signupCard}>
+          <div className={styles.signupHeader}>
             <Link href="/" className="inline-block">
-              <div className="flex items-center justify-center gap-2">
-                <Image 
-                  src="/images/logo.svg" 
-                  alt="Living Lavender Logo" 
-                  width={40} 
-                  height={40} 
-                />
-                <span className="text-primary font-semibold text-xl">Living Lavender</span>
+              <div className={styles.logo}>
+                <svg 
+                  width="40" 
+                  height="40" 
+                  viewBox="0 0 40 40" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="40" height="40" rx="8" fill="#7464A0" />
+                  <path d="M20 10C14.486 10 10 14.486 10 20C10 25.514 14.486 30 20 30C25.514 30 30 25.514 30 20C30 14.486 25.514 10 20 10ZM20 28C15.589 28 12 24.411 12 20C12 15.589 15.589 12 20 12C24.411 12 28 15.589 28 20C28 24.411 24.411 28 20 28Z" fill="white"/>
+                  <path d="M20 15C18.346 15 17 16.346 17 18C17 19.654 18.346 21 20 21C21.654 21 23 19.654 23 18C23 16.346 21.654 15 20 15Z" fill="white"/>
+                  <path d="M20 22C16.667 22 14 24.239 14 27H26C26 24.239 23.333 22 20 22Z" fill="white"/>
+                </svg>
+                <h1 className={styles.logoText}>Living Lavender</h1>
               </div>
             </Link>
-            <h1 className="text-2xl font-bold mt-4">Create Your Account</h1>
-            <p className="text-text-light mt-2">Join our community and find your perfect match</p>
+            <p>Create your account</p>
           </div>
           
           {error && (
-            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-              {error}
-            </div>
+            <div className={styles.errorMessage}>{error}</div>
           )}
           
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 gap-4">
+          <form className={styles.signupForm} onSubmit={handleSubmit}>
+            <div className={styles.formGrid}>
               <div className="form-group">
                 <label className="form-label" htmlFor="firstName">First Name</label>
                 <input
@@ -184,7 +172,7 @@ export default function BasicSignupPage() {
             </button>
           </form>
           
-          <div className="mt-6 text-center">
+          <div className={styles.loginPrompt}>
             <p>Already have an account? <Link href="/login" className="text-primary">Log In</Link></p>
           </div>
         </div>

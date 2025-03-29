@@ -1,187 +1,84 @@
 .dashboardContainer {
     min-height: 100vh;
+    padding: 3rem 0;
     background-color: var(--background);
-    padding: 2rem 0;
   }
   
   .dashboardHeader {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
   }
   
   .dashboardHeader h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: var(--primary);
     margin-bottom: 0.5rem;
   }
   
   .dashboardHeader p {
     color: var(--text-light);
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
   }
   
-  .dashboardGrid {
+  .dashboardContent {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .cardGrid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
   }
   
-  .profileCard {
+  .card {
     background-color: var(--card-bg);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
+    padding: 2rem;
     box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   
-  .profileImageContainer {
-    position: relative;
-    width: 128px;
-    height: 128px;
-    margin: 0 auto 1rem;
-    border-radius: 50%;
-    overflow: hidden;
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-md);
   }
   
-  .profileInitial {
-    width: 128px;
-    height: 128px;
+  .cardIcon {
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary);
-    color: white;
-    font-size: 2rem;
-    font-weight: 600;
-    border-radius: 50%;
-  }
-  
-  .profileInfo {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .profileInfo h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
-    color: var(--text);
-  }
-  
-  .profileInfo p {
-    color: var(--text-light);
-  }
-  
-  .completionContainer {
-    margin: 1.5rem 0;
-  }
-  
-  .completionContainer h3 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-  
-  .progressBar {
-    width: 100%;
-    height: 8px;
     background-color: var(--background);
-    border-radius: var(--radius-full);
-    margin-bottom: 0.5rem;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    color: var(--primary);
   }
   
-  .progressFill {
-    height: 100%;
-    background-color: var(--primary);
-    border-radius: var(--radius-full);
-    transition: width 0.3s ease;
-  }
-  
-  .completionText {
-    font-size: 0.875rem;
-    color: var(--text-light);
-  }
-  
-  .editProfileBtn {
-    width: 100%;
-    margin-top: 1rem;
-  }
-  
-  .contentCard {
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 1.5rem;
-  }
-  
-  .contentCard h2 {
-    font-size: 1.25rem;
+  .card h2 {
     margin-bottom: 1rem;
     color: var(--primary);
   }
   
-  .noBio {
-    color: var(--text-light);
-    font-style: italic;
+  .card p {
+    margin-bottom: 2rem;
+    flex-grow: 1;
   }
   
-  .interestsSection {
-    margin-top: 1.5rem;
-  }
-  
-  .interestsSection h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-  }
-  
-  .interestsTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .interestTag {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--background);
-    color: var(--primary);
-    border-radius: var(--radius-full);
-    font-size: 0.875rem;
-  }
-  
-  .preferencesBox {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background-color: rgba(116, 100, 160, 0.1);
-    border-radius: var(--radius-md);
-  }
-  
-  .preferencesBox h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    color: var(--text);
-  }
-  
-  .preferencesGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  
-  .preferenceItem p:first-child {
-    font-size: 0.875rem;
-    color: var(--text-light);
-    margin-bottom: 0.25rem;
-  }
-  
-  .preferenceItem p:last-child {
-    color: var(--text);
-  }
-  
-  .loader {
+  .loadingContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 50vh;
+    min-height: 100vh;
   }
   
   .spinner {
@@ -199,43 +96,41 @@
     100% { transform: rotate(360deg); }
   }
   
-  .completeProfileCard {
-    background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    box-shadow: var(--shadow-sm);
-    text-align: center;
+  .logoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 auto;
   }
   
-  .completeProfileCard h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+  .logoutButton:hover {
+    background-color: var(--background);
     color: var(--primary);
-  }
-  
-  .completeProfileCard p {
-    margin-bottom: 1.5rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    border-color: var(--primary);
   }
   
   @media (max-width: 992px) {
-    .dashboardGrid {
-      grid-template-columns: 1fr;
-    }
-    
-    .profileCard {
-      margin-bottom: 1.5rem;
-    }
-    
-    .preferencesGrid {
-      grid-template-columns: 1fr;
+    .cardGrid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
   
   @media (max-width: 768px) {
+    .cardGrid {
+      grid-template-columns: 1fr;
+    }
+    
     .dashboardHeader h1 {
-      font-size: 1.75rem;
+      font-size: 2rem;
     }
   }
