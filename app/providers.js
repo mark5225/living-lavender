@@ -1,9 +1,15 @@
+// app/providers.js
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export function Providers({ children }) {
   return (
-    <SessionProvider>{children}</SessionProvider>
+    <SessionProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </SessionProvider>
   );
 }

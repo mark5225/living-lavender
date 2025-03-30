@@ -1,45 +1,27 @@
+// components/layout/Header.js
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './Header.module.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  // Get user from localStorage on mount
-  useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        if (userData.isAuthenticated) {
-          setUser(userData);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-    }
-  }, [pathname]); // Re-check when pathname changes
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleLogout = () => {
-    // Clear user from localStorage
-    localStorage.removeItem('user');
-    setUser(null);
+    logout();
     
     // Close menu if open
     setIsMenuOpen(false);
-    
-    // Redirect to home
-    router.push('/');
   };
 
   return (

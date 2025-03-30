@@ -1,43 +1,30 @@
+// app/dashboard/page.js
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './dashboard.module.css';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, logout, loading } = useAuth();
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        if (userData.isAuthenticated) {
-          setUser(userData);
-        } else {
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        router.push('/login');
-      }
-    } else {
+    // If not authenticated after loading, redirect to login
+    if (!loading && !user) {
       router.push('/login');
     }
-    
-    setLoading(false);
-  }, [router]);
+  }, [user, loading, router]);
 
+  // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/login');
+    logout();
+    // Redirect happens in the logout function
   };
 
+  // If still checking authentication status, show loading state
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -47,8 +34,9 @@ export default function DashboardPage() {
     );
   }
 
+  // If not authenticated, don't render the dashboard (will redirect via useEffect)
   if (!user) {
-    return null; // Will redirect in useEffect
+    return null;
   }
 
   return (

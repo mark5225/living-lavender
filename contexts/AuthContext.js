@@ -1,141 +1,99 @@
+// contexts/AuthContext.js
 'use client';
 
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Create the auth context
-const AuthContext = createContext({});
+// Create the authentication context
+const AuthContext = createContext();
 
-// Export the provider component
+// Create a provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Mock authentication functions for demonstration purposes
-  const login = async (credentials) => {
-    try {
-      // Simulate API call
-      console.log('Logging in with:', credentials);
-      
-      // Mock successful response
-      const mockUser = {
-        id: '123',
-        email: credentials.email,
-        firstName: 'Test',
-        lastName: 'User',
-        profile: {
-          birthdate: '1990-01-01',
-          gender: 'female',
-          location: 'New York, NY',
-          bio: 'This is a test bio',
-          interests: ['Travel', 'Reading', 'Cooking'],
-          photos: [
-            {
-              url: '/images/sample-photo-1.jpg',
-              isMain: true
-            }
-          ],
-          preferences: {
-            lookingFor: ['Male'],
-            ageRange: { min: 25, max: 40 },
-            distance: 25,
-            relationshipType: 'Long-term relationship'
+  useEffect(() => {
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      // Try to get user from localStorage
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          if (userData.isAuthenticated) {
+            setUser(userData);
           }
         }
-      };
-      
-      // Set user in state
-      setUser(mockUser);
-      
-      // Store in localStorage
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Login error:', error);
-      return { 
-        success: false, 
-        error: error.message || 'Login failed' 
-      };
-    }
-  };
-
-  const logout = () => {
-    // Remove user from state
-    setUser(null);
-    
-    // Remove from localStorage
-    localStorage.removeItem('user');
-    
-    // Redirect to login
-    router.push('/login');
-  };
-
-  const updateProfile = (profileData) => {
-    try {
-      if (!user) {
-        throw new Error('User not logged in');
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Clear invalid user data
+        localStorage.removeItem('user');
       }
-      
-      // Update profile in state
-      const updatedUser = {
-        ...user,
-        profile: {
-          ...user.profile,
-          ...profileData
-        }
-      };
-      
-      setUser(updatedUser);
-      
-      // Update in localStorage
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Profile update error:', error);
-      return { 
-        success: false,
-        error: error.message || 'Failed to update profile'
-      };
     }
-  };
-
-  // Check for existing user on initial load
-  useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error('Error loading user from storage:', error);
-    } finally {
-      setLoading(false);
-    }
+    
+    // Set loading to false after checking authentication
+    setLoading(false);
   }, []);
 
-  // Auth context value
-  const contextValue = {
+  // Login function
+  const login = (userData) => {
+    // Save user to state and localStorage
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify({
+      ...userData,
+      isAuthenticated: true
+    }));
+  };
+
+  // Logout function
+  const logout = () => {
+    // Remove user from state and localStorage
+    setUser(null);
+    localStorage.removeItem('user');
+    // Redirect to home page
+    router.push('/');
+  };
+
+  // Update profile function
+  const updateProfile = (profileData) => {
+    if (!user) return false;
+    
+    const updatedUser = {
+      ...user,
+      profile: {
+        ...user.profile,
+        ...profileData
+      }
+    };
+    
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    return true;
+  };
+
+  // Context value
+  const value = {
     user,
     loading,
     login,
     logout,
-    updateProfile
+    updateProfile,
+    isAuthenticated: !!user
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Custom hook to use the auth context
-export function useAuth() {
-  return useContext(AuthContext);
-}
-
-export default AuthContext;
+// Hook to use the auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

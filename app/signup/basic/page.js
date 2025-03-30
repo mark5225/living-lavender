@@ -1,11 +1,16 @@
+// app/signup/basic/page.js
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from '../signup.module.css'; // This should now work
+import { useAuth } from '@/contexts/AuthContext';
+import styles from '../signup.module.css';
 
 export default function BasicSignupPage() {
+  const router = useRouter();
+  const { user, login } = useAuth();
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,7 +20,13 @@ export default function BasicSignupPage() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,14 +57,17 @@ export default function BasicSignupPage() {
       // For demonstration, we'll simulate creating an account
       // In a real app, you'd call your API endpoint here
       
-      // Store user data in localStorage for the demo
-      localStorage.setItem('user', JSON.stringify({
-        id: 'temp-' + Date.now(),
+      // Create a user object
+      const userData = {
+        id: 'user-' + Date.now(),
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        isAuthenticated: true
-      }));
+        profile: {}
+      };
+      
+      // Login the user using our context
+      login(userData);
       
       // Navigate to onboarding
       router.push('/onboarding');
@@ -64,6 +78,11 @@ export default function BasicSignupPage() {
       setIsLoading(false);
     }
   };
+
+  // If already authenticated, don't render the form (will redirect via useEffect)
+  if (user) {
+    return null;
+  }
 
   return (
     <div className={styles.signupContainer}>

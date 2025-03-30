@@ -1,7 +1,9 @@
+// components/onboarding/OnboardingWizard.js
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './OnboardingWizard.module.css';
 
 // Import step components
@@ -13,10 +15,11 @@ import CompleteStep from './steps/CompleteStep';
 
 const OnboardingWizard = () => {
   const router = useRouter();
+  const { user, updateProfile } = useAuth();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [userData, setUserData] = useState(null);
   
   const [formData, setFormData] = useState({
     // Basic Info
@@ -42,25 +45,17 @@ const OnboardingWizard = () => {
     photos: []
   });
 
-  // Load user data from localStorage
+  // Pre-fill form data with user info
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUserData(parsedUser);
-        
-        // Pre-fill form data with user info
-        setFormData(prevData => ({
-          ...prevData,
-          firstName: parsedUser.firstName || '',
-          lastName: parsedUser.lastName || ''
-        }));
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
+    if (user) {
+      setFormData(prevData => ({
+        ...prevData,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        ...(user.profile || {})
+      }));
     }
-  }, []);
+  }, [user]);
 
   const totalSteps = 5;
 
@@ -124,21 +119,16 @@ const OnboardingWizard = () => {
         setIsSubmitting(true);
         setSubmitError('');
         
-        // Update user profile in localStorage
-        if (userData) {
-          const updatedUser = {
-            ...userData,
-            profile: formData
-          };
-          
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-          
+        // Update the user profile using our context
+        const result = updateProfile(formData);
+        
+        if (result) {
           // Add artificial delay to simulate API call
           setTimeout(() => {
             router.push('/dashboard');
           }, 1000);
         } else {
-          throw new Error('User data not found');
+          throw new Error('Failed to update profile');
         }
       } catch (error) {
         console.error('Error submitting form:', error);

@@ -1,8 +1,9 @@
+// components/routing/ProtectedRoute.js
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './protected-route.module.css';
 
 export default function ProtectedRoute({ children }) {

@@ -1,14 +1,15 @@
+// app/login/page.js
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/react';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { user, login, loading } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -17,14 +18,13 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (status === 'authenticated' && session) {
+    if (user) {
       router.push('/dashboard');
     }
-  }, [session, status, router]);
+  }, [user, router]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,7 +37,6 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setDebugInfo('');
     setIsLoading(true);
 
     // Basic validation
@@ -48,56 +47,37 @@ export default function LoginPage() {
     }
 
     try {
-      setDebugInfo('Attempting to sign in with credentials...');
+      // For demonstration purposes, we'll simulate a login
+      // In a real app, you'd call your API endpoint here
       
-      // Use NextAuth signIn method
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: formData.email,
-        password: formData.password
-      });
-      
-      setDebugInfo(prev => prev + `\nSignIn result: ${JSON.stringify(result)}`);
-      
-      if (result?.error) {
-        // Handle error from NextAuth
-        setError(result.error || 'Invalid email or password');
-      } else if (result?.ok) {
-        // Successfully logged in, redirect to dashboard
-        setDebugInfo(prev => prev + '\nLogin successful, redirecting...');
-        router.push('/dashboard');
+      // Demo login (success if email contains "@" and password length >= 6)
+      if (formData.email.includes('@') && formData.password.length >= 6) {
+        // Create a mock user object
+        const userData = {
+          id: 'user-' + Date.now(),
+          email: formData.email,
+          firstName: formData.email.split('@')[0], // Use part of email as name for demo
+          lastName: '',
+          profile: {}
+        };
+        
+        // Login the user (updates context and localStorage)
+        login(userData);
+        
+        // Redirect will happen automatically via the useEffect
+      } else {
+        setError('Invalid email or password');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(`An error occurred during login: ${error.message}`);
-      setDebugInfo(prev => prev + `\nError caught: ${error.message}`);
+      setError(error.message || 'An error occurred during login. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider) => {
-    setIsLoading(true);
-    setError('');
-    setDebugInfo('');
-    
-    try {
-      setDebugInfo(`Attempting to sign in with ${provider}...`);
-      
-      // Use NextAuth for social login
-      await signIn(provider, { callbackUrl: '/dashboard' });
-      
-      // Note: The redirect is handled by NextAuth
-    } catch (error) {
-      console.error(`${provider} login error:`, error);
-      setError(`An error occurred during ${provider} login: ${error.message}`);
-      setDebugInfo(prev => prev + `\nError caught: ${error.message}`);
-      setIsLoading(false);
-    }
-  };
-
-  // If loading session, show loading state
-  if (status === 'loading') {
+  // If still checking authentication status, show loading state
+  if (loading) {
     return (
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
@@ -116,11 +96,16 @@ export default function LoginPage() {
     );
   }
 
+  // If already authenticated, don't render the form (will redirect via useEffect)
+  if (user) {
+    return null;
+  }
+
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
         <div className={styles.loginHeader}>
-          <div className={styles.logo}>
+          <Link href="/" className={styles.logo}>
             <svg 
               width="40" 
               height="40" 
@@ -134,18 +119,12 @@ export default function LoginPage() {
               <path d="M20 22C16.667 22 14 24.239 14 27H26C26 24.239 23.333 22 20 22Z" fill="white"/>
             </svg>
             <h1 className={styles.logoText}>Living Lavender</h1>
-          </div>
+          </Link>
           <p>Sign in to your account</p>
         </div>
         
         {error && (
           <div className={styles.errorMessage}>{error}</div>
-        )}
-        
-        {debugInfo && (
-          <div style={{padding: '10px', background: '#f5f5f5', fontSize: '12px', whiteSpace: 'pre-wrap', marginBottom: '10px'}}>
-            Debug Info: {debugInfo}
-          </div>
         )}
         
         <form className={styles.loginForm} onSubmit={handleSubmit}>
@@ -211,7 +190,9 @@ export default function LoginPage() {
           <div className={styles.socialButtons}>
             <button 
               className={styles.socialButton}
-              onClick={() => handleSocialLogin('facebook')}
+              onClick={() => {
+                setError('Social login is not implemented in this demo');
+              }}
               type="button"
               disabled={isLoading}
             >
@@ -222,7 +203,9 @@ export default function LoginPage() {
             </button>
             <button 
               className={styles.socialButton}
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => {
+                setError('Social login is not implemented in this demo');
+              }}
               type="button"
               disabled={isLoading}
             >
