@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import User from '@/models/user';
 import bcrypt from 'bcryptjs';
+import { connectDB } from '@/lib/mongodb';
 
 export const authOptions = {
   providers: [
@@ -13,53 +14,62 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          console.log("Missing credentials");
+          throw new Error("Email and password are required");
         }
 
         try {
+          await connectDB(); // Ensure DB connection
+          
           // Find user by email
           const user = await User.findByEmail(credentials.email);
           
           if (!user) {
-            return null;
+            console.log("User not found:", credentials.email);
+            throw new Error("Invalid email or password");
           }
           
           // Compare password
           const isValid = await bcrypt.compare(credentials.password, user.password);
           
           if (!isValid) {
-            return null;
+            console.log("Invalid password for user:", credentials.email);
+            throw new Error("Invalid email or password");
           }
           
           // Return user without password
           const { password, ...userWithoutPassword } = user;
           
+          console.log("User authenticated:", user._id);
           return userWithoutPassword;
         } catch (error) {
           console.error('Error in authorize:', error);
-          return null;
+          throw new Error(error.message || "Authentication failed");
         }
       }
     })
   ],
+  debug: process.env.NODE_ENV === 'development',
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user._id.toString();
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
+        token.firstName = user.firstName || '';
+        token.lastName = user.lastName || '';
         token.profile = user.profile || {};
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = {
-        id: token.id,
-        email: token.email,
-        firstName: token.firstName,
-        lastName: token.lastName,
-        profile: token.profile
-      };
+      if (token) {
+        session.user = {
+          id: token.id,
+          email: token.email,
+          firstName: token.firstName,
+          lastName: token.lastName,
+          profile: token.profile
+        };
+      }
       return session;
     }
   },

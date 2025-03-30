@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { signIn, useSession } from 'next-auth/react';
 import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -15,6 +17,14 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/dashboard');
+    }
+  }, [session, status, router]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -27,6 +37,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setDebugInfo('');
     setIsLoading(true);
 
     // Basic validation
@@ -37,55 +48,73 @@ export default function LoginPage() {
     }
 
     try {
-      // For a demo, we'll check if there's a matching user in localStorage
-      const storedUserJson = localStorage.getItem('user');
+      setDebugInfo('Attempting to sign in with credentials...');
       
-      if (storedUserJson) {
-        const storedUser = JSON.parse(storedUserJson);
-        
-        // In a real app, you would verify passwords with bcrypt or similar
-        // For this demo, we'll just check if the email matches
-        if (storedUser.email === formData.email) {
-          // Update authentication status
-          storedUser.isAuthenticated = true;
-          localStorage.setItem('user', JSON.stringify(storedUser));
-          
-          // Redirect to dashboard
-          router.push('/dashboard');
-          return;
-        }
+      // Use NextAuth signIn method
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: formData.email,
+        password: formData.password
+      });
+      
+      setDebugInfo(prev => prev + `\nSignIn result: ${JSON.stringify(result)}`);
+      
+      if (result?.error) {
+        // Handle error from NextAuth
+        setError(result.error || 'Invalid email or password');
+      } else if (result?.ok) {
+        // Successfully logged in, redirect to dashboard
+        setDebugInfo(prev => prev + '\nLogin successful, redirecting...');
+        router.push('/dashboard');
       }
-      
-      // If we got here, no matching user was found
-      setError('Invalid email or password. Please try again.');
     } catch (error) {
       console.error('Login error:', error);
-      setError('An error occurred during login. Please try again.');
+      setError(`An error occurred during login: ${error.message}`);
+      setDebugInfo(prev => prev + `\nError caught: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSocialLogin = (provider) => {
+  const handleSocialLogin = async (provider) => {
     setIsLoading(true);
+    setError('');
+    setDebugInfo('');
     
-    // For demo purposes, simulate a social login
-    setTimeout(() => {
-      // Create a demo user
-      const demoUser = {
-        id: `demo-${provider}-${Date.now()}`,
-        email: `demo-${provider}@example.com`,
-        firstName: 'Demo',
-        lastName: 'User',
-        isAuthenticated: true
-      };
+    try {
+      setDebugInfo(`Attempting to sign in with ${provider}...`);
       
-      localStorage.setItem('user', JSON.stringify(demoUser));
+      // Use NextAuth for social login
+      await signIn(provider, { callbackUrl: '/dashboard' });
       
-      // Redirect to dashboard
-      router.push('/dashboard');
-    }, 1000);
+      // Note: The redirect is handled by NextAuth
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+      setError(`An error occurred during ${provider} login: ${error.message}`);
+      setDebugInfo(prev => prev + `\nError caught: ${error.message}`);
+      setIsLoading(false);
+    }
   };
+
+  // If loading session, show loading state
+  if (status === 'loading') {
+    return (
+      <div className={styles.loginContainer}>
+        <div className={styles.loginCard}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+            <div style={{ 
+              width: '40px', 
+              height: '40px', 
+              border: '4px solid rgba(116, 100, 160, 0.1)', 
+              borderRadius: '50%', 
+              borderTopColor: '#7464A0', 
+              animation: 'spin 1s linear infinite' 
+            }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.loginContainer}>
@@ -111,6 +140,12 @@ export default function LoginPage() {
         
         {error && (
           <div className={styles.errorMessage}>{error}</div>
+        )}
+        
+        {debugInfo && (
+          <div style={{padding: '10px', background: '#f5f5f5', fontSize: '12px', whiteSpace: 'pre-wrap', marginBottom: '10px'}}>
+            Debug Info: {debugInfo}
+          </div>
         )}
         
         <form className={styles.loginForm} onSubmit={handleSubmit}>
