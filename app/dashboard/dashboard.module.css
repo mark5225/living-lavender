@@ -104,11 +104,13 @@
   .card h2 {
     margin-bottom: 1rem;
     color: var(--primary);
+    font-size: 1.5rem;
   }
   
   .card p {
     margin-bottom: 2rem;
     flex-grow: 1;
+    color: var(--text-light);
   }
   
   .loadingContainer {
@@ -134,21 +136,32 @@
     100% { transform: rotate(360deg); }
   }
   
+  .userActions {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .profileButton,
   .logoutButton {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: none;
-    border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    color: var(--text-light);
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.875rem;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin: 0 auto;
+  }
+  
+  .logoutButton {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-light);
   }
   
   .logoutButton:hover {
@@ -184,5 +197,17 @@
     
     .highlightContent h2 {
       font-size: 1.75rem;
+    }
+    
+    .userActions {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .profileButton,
+    .logoutButton {
+      width: 100%;
+      max-width: 250px;
     }
   }

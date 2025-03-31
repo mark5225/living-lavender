@@ -1,3 +1,4 @@
+// app/matches/page.js
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,6 +13,8 @@ export default function MatchesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [lastAction, setLastAction] = useState(null);
   
   // Fetch matches
   useEffect(() => {
@@ -100,13 +103,25 @@ export default function MatchesPage() {
     // In a real app, send action to API
     console.log(`Match action: ${action} for profile ID ${matches[currentIndex].id}`);
     
-    // Move to next profile
-    if (currentIndex < matches.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      // No more profiles
-      setError('You\'ve viewed all available profiles. Check back later for more matches!');
-    }
+    // Save the action
+    setLastAction({
+      action,
+      profile: matches[currentIndex]
+    });
+    
+    // Show confirmation
+    setShowConfirmation(true);
+    
+    // Move to next profile after a short delay
+    setTimeout(() => {
+      if (currentIndex < matches.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        // No more profiles
+        setError('You\'ve viewed all available profiles. Check back later for more matches!');
+      }
+      setShowConfirmation(false);
+    }, 1500);
   };
   
   if (isLoading) {
@@ -206,6 +221,25 @@ export default function MatchesPage() {
             </div>
           </div>
           
+          {/* Action Confirmation */}
+          {showConfirmation && lastAction && (
+            <div className={`${styles.actionConfirmation} ${lastAction.action === 'like' ? styles.likeConfirmation : styles.passConfirmation}`}>
+              <div className={styles.confirmationIcon}>
+                {lastAction.action === 'like' ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                )}
+              </div>
+              <p>{lastAction.action === 'like' ? 'Liked!' : 'Passed'}</p>
+            </div>
+          )}
+          
           {!user && (
             <div className={styles.signupPrompt}>
               <h3>Ready to connect?</h3>
@@ -221,4 +255,3 @@ export default function MatchesPage() {
       </div>
     </div>
   );
-}

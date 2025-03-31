@@ -41,6 +41,8 @@
   display: flex;
   list-style: none;
   gap: 1.5rem;
+  margin: 0;
+  padding: 0;
 }
 
 .navLink {
@@ -76,18 +78,56 @@
   width: 100%;
 }
 
-.matchesLink {
+.activeLink {
+  color: var(--primary);
   font-weight: 600;
+}
+
+.activeLink::after {
+  width: 100%;
+}
+
+.dashboardLink {
+  color: var(--text);
+  font-weight: 500;
+  transition: var(--transition-fast);
+  position: relative;
+  padding-bottom: 0.25rem;
+  margin-right: 1rem;
+}
+
+.dashboardLink:hover {
   color: var(--primary);
 }
 
-.matchesLink::after {
+.dashboardLink::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
   background-color: var(--primary);
+  transition: var(--transition-normal);
+}
+
+.dashboardLink:hover::after {
+  width: 100%;
+}
+
+.dashboardLink.activeLink {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.dashboardLink.activeLink::after {
+  width: 100%;
 }
 
 .navButtons {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .hamburger {
@@ -130,6 +170,7 @@
     padding: 2rem;
     box-shadow: var(--shadow-lg);
     transition: var(--transition-normal);
+    z-index: 100;
   }
   
   .nav.active {
@@ -143,6 +184,16 @@
   }
   
   .navButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .dashboardLink {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .userMenu {
     flex-direction: column;
     width: 100%;
   }

@@ -19,9 +19,12 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    
     // Close menu if open
     setIsMenuOpen(false);
+  };
+
+  const isActive = (path) => {
+    return pathname === path;
   };
 
   return (
@@ -51,27 +54,47 @@ const Header = () => {
           <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
             <ul className={styles.navLinks}>
               <li>
-                <Link href="/" className={styles.navLink} onClick={() => setIsMenuOpen(false)}>
+                <Link 
+                  href="/" 
+                  className={`${styles.navLink} ${isActive('/') ? styles.activeLink : ''}`} 
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/matches" className={`${styles.navLink} ${styles.matchesLink}`} onClick={() => setIsMenuOpen(false)}>
+                <Link 
+                  href="/matches" 
+                  className={`${styles.navLink} ${isActive('/matches') ? styles.activeLink : ''}`} 
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Matches
                 </Link>
               </li>
               <li>
-                <Link href="/about" className={styles.navLink} onClick={() => setIsMenuOpen(false)}>
+                <Link 
+                  href="/about" 
+                  className={`${styles.navLink} ${isActive('/about') ? styles.activeLink : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/success-stories" className={styles.navLink} onClick={() => setIsMenuOpen(false)}>
+                <Link 
+                  href="/success-stories" 
+                  className={`${styles.navLink} ${isActive('/success-stories') ? styles.activeLink : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Success Stories
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className={styles.navLink} onClick={() => setIsMenuOpen(false)}>
+                <Link 
+                  href="/contact" 
+                  className={`${styles.navLink} ${isActive('/contact') ? styles.activeLink : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Contact
                 </Link>
               </li>
@@ -81,7 +104,7 @@ const Header = () => {
                 <>
                   <Link 
                     href="/dashboard" 
-                    className={styles.navLink}
+                    className={`${styles.dashboardLink} ${isActive('/dashboard') ? styles.activeLink : ''}`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Dashboard

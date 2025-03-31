@@ -1,0 +1,206 @@
+/* app/admin/admin.module.css */
+.adminContainer {
+    min-height: 100vh;
+    padding: 3rem 0;
+    background-color: var(--background);
+  }
+  
+  .adminHeader {
+    margin-bottom: 2rem;
+  }
+  
+  .adminHeader h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .adminHeader p {
+    color: var(--text-light);
+  }
+  
+  .message {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+  }
+  
+  .success {
+    background-color: rgba(92, 184, 92, 0.1);
+    color: #5cb85c;
+    border: 1px solid rgba(92, 184, 92, 0.2);
+  }
+  
+  .error {
+    background-color: rgba(217, 83, 79, 0.1);
+    color: #d9534f;
+    border: 1px solid rgba(217, 83, 79, 0.2);
+  }
+  
+  .adminContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .adminCard {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .adminCard h2 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .adminCard p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+  }
+  
+  .generateForm {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .formGroup label {
+    font-weight: 500;
+    color: var(--text);
+  }
+  
+  .countInput {
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    width: 100px;
+    font-size: 1rem;
+  }
+  
+  .generateBtn {
+    min-width: 200px;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .userTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .userTable th,
+  .userTable td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .userTable th {
+    font-weight: 600;
+    color: var(--primary);
+    background-color: var(--background);
+  }
+  
+  .userTable tr:hover {
+    background-color: var(--background);
+  }
+  
+  .membershipSelect {
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background-color: var(--card-bg);
+  }
+  
+  .viewBtn, 
+  .deleteBtn {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+  
+  .viewBtn {
+    background-color: var(--background);
+    color: var(--primary);
+  }
+  
+  .deleteBtn {
+    background-color: rgba(217, 83, 79, 0.1);
+    color: #d9534f;
+  }
+  
+  .viewBtn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  .deleteBtn:hover {
+    background-color: #d9534f;
+    color: white;
+  }
+  
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+  }
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(116, 100, 160, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .generateForm {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .countInput {
+      width: 100%;
+    }
+    
+    .generateBtn {
+      width: 100%;
+    }
+    
+    .userTable th,
+    .userTable td {
+      padding: 0.75rem 0.5rem;
+    }
+    
+    .viewBtn, 
+    .deleteBtn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+  }
