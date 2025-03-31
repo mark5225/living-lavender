@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import User from '@/models/user';
+import { connectDB } from '@/lib/mongodb';
 
 // Create demo users - POST /api/admin/demo-users
 export async function POST(request) {
@@ -140,6 +141,15 @@ export async function DELETE(request) {
     const result = await db.collection('users')
       .deleteMany({ membershipType: 'demo' });
     
-      return NextResponse.json({
-        message: `Successfully deleted ${result.deletedCount} demo users`,
-        count: result.deletedCount
+    return NextResponse.json({
+      message: `Successfully deleted ${result.deletedCount} demo users`,
+      count: result.deletedCount
+    }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting demo users:', error);
+    return NextResponse.json(
+      { message: 'Error deleting demo users', error: error.message },
+      { status: 500 }
+    );
+  }
+}

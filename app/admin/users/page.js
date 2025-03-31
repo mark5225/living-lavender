@@ -317,4 +317,21 @@ export default function AdminUsersPage() {
                   <button 
                     className={styles.cancelButton}
                     onClick={() => setConfirmDelete(null)}
-                  ></button>
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className={styles.confirmButton}
+                    onClick={confirmDeleteUser}
+                  >
+                    Delete User
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </AdminRoute>
+  );
+}
