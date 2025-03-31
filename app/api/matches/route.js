@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import User from '@/models/user';
 import { connectDB } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
@@ -18,9 +17,12 @@ export async function GET() {
     }
     
     const userId = session.user.id;
+    const db = await connectDB();
     
     // Get the user with their preferences
-    const user = await User.findById(userId);
+    const user = await db.collection('users').findOne(
+      { _id: new ObjectId(userId) }
+    );
     
     if (!user || !user.profile || !user.profile.preferences) {
       return NextResponse.json(
@@ -30,8 +32,6 @@ export async function GET() {
     }
     
     const { preferences } = user.profile;
-    
-    const db = await connectDB();
     
     // Build the query based on user preferences
     const query = {
@@ -64,18 +64,91 @@ export async function GET() {
       };
     }
     
-    // In a real application, you would filter by distance using geospatial queries
-    // This would require storing user locations as coordinates and using $near operator
+    // Get user's existing interests and matches to exclude
+    const userInterests = await db.collection('interests').findOne(
+      { userId: new ObjectId(userId) }
+    );
+    
+    // Exclude users the current user has already swiped on
+    if (userInterests && userInterests.interests) {
+      const alreadySwipedIds = Object.keys(userInterests.interests)
+        .filter(id => id.match(/^[0-9a-fA-F]{24}$/)) // Valid ObjectId strings
+        .map(id => new ObjectId(id));
+      
+      if (alreadySwipedIds.length > 0) {
+        query._id.$nin = alreadySwipedIds;
+      }
+    }
+    
+    // Get existing matches
+    const existingMatches = await db.collection('matches').find({
+      users: new ObjectId(userId)
+    }).toArray();
+    
+    // Extract other user IDs from matches
+    const matchedUserIds = [];
+    existingMatches.forEach(match => {
+      match.users.forEach(uid => {
+        if (!uid.equals(new ObjectId(userId))) {
+          matchedUserIds.push(uid);
+        }
+      });
+    });
+    
+    // Exclude matched users from potential matches
+    if (matchedUserIds.length > 0) {
+      if (query._id.$nin) {
+        query._id.$nin = [...query._id.$nin, ...matchedUserIds];
+      } else {
+        query._id.$nin = matchedUserIds;
+      }
+    }
     
     // Limit to 20 potential matches
     const potentialMatches = await db.collection('users')
       .find(query)
-      .project({ password: 0 }) // Exclude password
+      .project({ 
+        password: 0,
+        email: 0,
+        role: 0,
+        membershipType: 0
+      })
       .limit(20)
       .toArray();
     
+    // Format the matches for the frontend
+    const formattedMatches = potentialMatches.map(match => {
+      // Calculate age from birthdate
+      let age = null;
+      if (match.profile && match.profile.birthdate) {
+        const birthdate = new Date(match.profile.birthdate);
+        const today = new Date();
+        age = today.getFullYear() - birthdate.getFullYear();
+        
+        // Adjust age if birthday hasn't occurred yet this year
+        if (
+          today.getMonth() < birthdate.getMonth() || 
+          (today.getMonth() === birthdate.getMonth() && today.getDate() < birthdate.getDate())
+        ) {
+          age--;
+        }
+      }
+      
+      return {
+        id: match._id.toString(),
+        name: `${match.firstName} ${match.lastName}`,
+        age: age,
+        location: match.profile?.location || null,
+        bio: match.profile?.bio || null,
+        interests: match.profile?.interests || [],
+        photoUrl: match.profile?.photos && match.profile.photos.length > 0 
+          ? (match.profile.photos.find(p => p.isMain)?.url || match.profile.photos[0].url)
+          : `https://placehold.co/400x600/7464a0/ffffff?text=${match.firstName}`
+      };
+    });
+    
     return NextResponse.json(
-      { matches: potentialMatches },
+      { matches: formattedMatches },
       { status: 200 }
     );
   } catch (error) {

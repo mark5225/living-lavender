@@ -1,99 +1,139 @@
-// contexts/AuthContext.js
 'use client';
 
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
-// Create the authentication context
 const AuthContext = createContext();
 
-// Create a provider component
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
+  // Sync user state with session
   useEffect(() => {
-    // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
-      // Try to get user from localStorage
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          if (userData.isAuthenticated) {
-            setUser(userData);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        // Clear invalid user data
-        localStorage.removeItem('user');
-      }
+    if (status === 'loading') {
+      setLoading(true);
+      return;
+    }
+
+    if (session && session.user) {
+      setUser(session.user);
+    } else {
+      setUser(null);
     }
     
-    // Set loading to false after checking authentication
     setLoading(false);
-  }, []);
+  }, [session, status]);
 
-  // Login function
-  const login = (userData) => {
-    // Save user to state and localStorage
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify({
-      ...userData,
-      isAuthenticated: true
-    }));
-  };
+  // Login function - uses NextAuth signIn
+  const login = async (credentials) => {
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: credentials.email,
+        password: credentials.password
+      });
 
-  // Logout function
-  const logout = () => {
-    // Remove user from state and localStorage
-    setUser(null);
-    localStorage.removeItem('user');
-    // Redirect to home page
-    router.push('/');
-  };
-
-  // Update profile function
-  const updateProfile = (profileData) => {
-    if (!user) return false;
-    
-    const updatedUser = {
-      ...user,
-      profile: {
-        ...user.profile,
-        ...profileData
+      if (result.error) {
+        throw new Error(result.error);
       }
-    };
-    
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    return true;
+
+      // Refresh session
+      router.push('/dashboard');
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
-  // Context value
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    updateProfile,
-    isAuthenticated: !!user
+  // Signup function - creates a new user then logs in
+  const signup = async (userData) => {
+    try {
+      // Call API to create user
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error creating account');
+      }
+
+      // Auto login after signup
+      await login({
+        email: userData.email,
+        password: userData.password
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
+  };
+
+  // Logout function - uses NextAuth signOut
+  const logout = async () => {
+    await signOut({ redirect: false });
+    router.push('/login');
+  };
+
+  // Update profile function - sends changes to API
+  const updateProfile = async (profileData) => {
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error updating profile');
+      }
+
+      // Update local user state with the new profile data
+      const updatedData = await response.json();
+      setUser(prev => ({
+        ...prev,
+        ...updatedData.user
+      }));
+
+      return true;
+    } catch (error) {
+      console.error('Profile update error:', error);
+      throw error;
+    }
+  };
+
+  // Check if user is admin
+  const isAdmin = () => {
+    return user && user.role === 'admin';
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      login,
+      signup,
+      logout,
+      updateProfile,
+      isAdmin
+    }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-// Hook to use the auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
+
+export const useAuth = () => useContext(AuthContext);
