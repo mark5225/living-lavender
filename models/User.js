@@ -1,23 +1,34 @@
 // models/user.js
 import { connectDB } from '@/lib/mongodb';
-import bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
+import bcrypt from 'bcryptjs';
 
-// User model with methods for database operations
 class User {
-  // Find user by ID
+  /**
+   * Find a user by ID
+   * @param {string} id - User ID
+   * @returns {Promise<Object|null>} User object or null if not found
+   */
   static async findById(id) {
     try {
       const db = await connectDB();
-      const user = await db.collection('users').findOne({ _id: new ObjectId(id) });
+      
+      // Convert string ID to ObjectId
+      const objectId = typeof id === 'string' ? new ObjectId(id) : id;
+      
+      const user = await db.collection('users').findOne({ _id: objectId });
       return user;
     } catch (error) {
       console.error('Error finding user by ID:', error);
       return null;
     }
   }
-
-  // Find user by email
+  
+  /**
+   * Find a user by email
+   * @param {string} email - User email
+   * @returns {Promise<Object|null>} User object or null if not found
+   */
   static async findByEmail(email) {
     try {
       const db = await connectDB();
@@ -28,8 +39,12 @@ class User {
       return null;
     }
   }
-
-  // Create new user
+  
+  /**
+   * Create a new user
+   * @param {Object} userData - User data including email, password, firstName, lastName
+   * @returns {Promise<Object>} Created user object
+   */
   static async create(userData) {
     try {
       const db = await connectDB();
@@ -38,199 +53,55 @@ class User {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(userData.password, salt);
       
-      // Create user object with membership type
+      // Create user object
       const newUser = {
         email: userData.email.toLowerCase(),
         password: hashedPassword,
         firstName: userData.firstName,
         lastName: userData.lastName,
+        role: 'user', // Default role
+        membershipType: 'basic', // Default membership type
         createdAt: new Date(),
         updatedAt: new Date(),
-        role: 'user', // Default role
-        membershipType: userData.membershipType || 'basic', // Default to basic
-        membershipExpires: null, // For premium memberships
-        profile: {
-          birthdate: null,
-          gender: null,
-          location: null,
-          bio: null,
-          interests: [],
-          photos: [],
-          occupation: null,
-          education: null,
-          preferences: {
-            lookingFor: [],
-            ageRange: { min: 18, max: 50 },
-            distance: 50,
-            relationshipType: null
-          }
-        },
-        settings: {
-          emailNotifications: true,
-          profileVisibility: 'public'
-        },
-        stats: {
-          profileViews: 0,
-          totalMatches: 0,
-          lastActive: new Date()
-        }
+        profile: {} // Empty profile by default
       };
       
-      // Insert user into database
+      // Insert into database
       const result = await db.collection('users').insertOne(newUser);
       
-      // Return created user without password
-      const { password, ...userWithoutPassword } = newUser;
-      userWithoutPassword._id = result.insertedId;
-      
-      return userWithoutPassword;
+      // Return user with ID
+      return { 
+        _id: result.insertedId, 
+        ...newUser 
+      };
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
     }
   }
-
-  // Create demo user
-  static async createDemoUser() {
-    try {
-      const db = await connectDB();
-      
-      // Generate random demo data
-      const gender = Math.random() > 0.5 ? 'male' : 'female';
-      const firstName = gender === 'male' 
-        ? ['James', 'John', 'Robert', 'Michael', 'William'][Math.floor(Math.random() * 5)]
-        : ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth'][Math.floor(Math.random() * 5)];
-      
-      const lastName = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones'][Math.floor(Math.random() * 5)];
-      
-      // Random age between 21 and 45
-      const age = 21 + Math.floor(Math.random() * 25);
-      const today = new Date();
-      const birthYear = today.getFullYear() - age;
-      const birthMonth = Math.floor(Math.random() * 12) + 1;
-      const birthDay = Math.floor(Math.random() * 28) + 1;
-      const birthdate = `${birthYear}-${birthMonth.toString().padStart(2, '0')}-${birthDay.toString().padStart(2, '0')}`;
-      
-      // Random location
-      const locations = ['New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ', 
-                     'Philadelphia, PA', 'San Antonio, TX', 'San Diego, CA', 'Dallas, TX', 'San Jose, CA'];
-      const location = locations[Math.floor(Math.random() * locations.length)];
-      
-      // Random interests (3-6 interests)
-      const allInterests = [
-        'Travel', 'Reading', 'Fitness', 'Cooking', 'Photography', 'Music', 'Movies', 'Art', 'Dance', 'Hiking', 
-        'Yoga', 'Technology', 'Gaming', 'Sports', 'Fashion', 'Writing', 'Volunteering', 'Food', 'Animals', 'Spirituality'
-      ];
-      
-      const interestCount = 3 + Math.floor(Math.random() * 4);
-      const shuffledInterests = [...allInterests].sort(() => 0.5 - Math.random());
-      const selectedInterests = shuffledInterests.slice(0, interestCount);
-      
-      // Random bio templates
-      const bioTemplates = [
-        `Love exploring new ${selectedInterests[0].toLowerCase()} spots and enjoying ${selectedInterests[1].toLowerCase()} in my free time.`,
-        `Passionate about ${selectedInterests[0].toLowerCase()} and ${selectedInterests[1].toLowerCase()}. Looking for someone to share adventures with.`,
-        `${selectedInterests[0]} enthusiast who enjoys ${selectedInterests[1].toLowerCase()} on weekends. Let's chat!`,
-        `When I'm not working, you'll find me doing ${selectedInterests[0].toLowerCase()} or exploring ${selectedInterests[1].toLowerCase()}.`,
-        `Life is too short not to enjoy ${selectedInterests[0].toLowerCase()}! Also into ${selectedInterests[1].toLowerCase()} and ${selectedInterests[2].toLowerCase()}.`
-      ];
-      
-      const bio = bioTemplates[Math.floor(Math.random() * bioTemplates.length)];
-      
-      // Create user object
-      const demoUser = {
-        email: `demo_${Date.now()}@example.com`, // Unique email
-        password: await bcrypt.hash('demopassword', 10),
-        firstName,
-        lastName,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        role: 'user',
-        membershipType: 'demo', // Mark as demo account
-        membershipExpires: null,
-        profile: {
-          birthdate,
-          gender,
-          location,
-          bio,
-          interests: selectedInterests,
-          photos: [], // Demo photos would be generated separately
-          occupation: gender === 'male' 
-            ? ['Software Engineer', 'Teacher', 'Marketing Manager', 'Doctor', 'Graphic Designer'][Math.floor(Math.random() * 5)]
-            : ['Nurse', 'Teacher', 'Marketing Specialist', 'Designer', 'Accountant'][Math.floor(Math.random() * 5)],
-          education: educationOptions[Math.floor(Math.random() * educationOptions.length)],
-          preferences: {
-            lookingFor: gender === 'male' ? ['Female'] : ['Male'],
-            ageRange: { 
-              min: Math.max(18, age - 5), 
-              max: age + 5 
-            },
-            distance: 25 + Math.floor(Math.random() * 50),
-            relationshipType: relationshipOptions[Math.floor(Math.random() * relationshipOptions.length)]
-          }
-        },
-        settings: {
-          emailNotifications: false, // No notifications for demo accounts
-          profileVisibility: 'demo' // Special visibility for demo accounts
-        },
-        stats: {
-          profileViews: Math.floor(Math.random() * 100),
-          totalMatches: Math.floor(Math.random() * 20),
-          lastActive: new Date()
-        },
-        isDemo: true // Flag to easily identify demo accounts
-      };
-      
-      // Insert demo user into database
-      const result = await db.collection('users').insertOne(demoUser);
-      
-      // Return created user without password
-      const { password, ...userWithoutPassword } = demoUser;
-      userWithoutPassword._id = result.insertedId;
-      
-      return userWithoutPassword;
-    } catch (error) {
-      console.error('Error creating demo user:', error);
-      throw error;
-    }
-  }
-
-  // Create multiple demo users
-  static async createDemoUsers(count) {
-    try {
-      const demoUsers = [];
-      
-      for (let i = 0; i < count; i++) {
-        const demoUser = await User.createDemoUser();
-        demoUsers.push(demoUser);
-      }
-      
-      return demoUsers;
-    } catch (error) {
-      console.error('Error creating multiple demo users:', error);
-      throw error;
-    }
-  }
-
-  // Update user profile
+  
+  /**
+   * Update user profile
+   * @param {string} userId - User ID
+   * @param {Object} profileData - Profile data to update
+   * @returns {Promise<boolean>} Success status
+   */
   static async updateProfile(userId, profileData) {
     try {
       const db = await connectDB();
       
-      // Build update object
-      const updateData = {
-        updatedAt: new Date()
-      };
+      // Convert string ID to ObjectId
+      const objectId = typeof userId === 'string' ? new ObjectId(userId) : userId;
       
-      // Update profile fields if provided
-      if (profileData) {
-        updateData['profile'] = profileData;
-      }
-      
-      // Update user in database
+      // Update user profile
       const result = await db.collection('users').updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: updateData }
+        { _id: objectId },
+        { 
+          $set: { 
+            profile: profileData,
+            updatedAt: new Date()
+          } 
+        }
       );
       
       return result.modifiedCount > 0;
@@ -239,91 +110,104 @@ class User {
       return false;
     }
   }
-
-  // Update membership type
-  static async updateMembership(userId, membershipType, expiryDate = null) {
+  
+  /**
+   * Create demo users with random data
+   * @param {number} count - Number of demo users to create
+   * @returns {Promise<Array>} Array of created demo users
+   */
+  static async createDemoUsers(count) {
     try {
       const db = await connectDB();
       
-      const updateData = {
-        membershipType,
-        updatedAt: new Date()
+      // Sample data for generating demo users
+      const firstNames = ['John', 'Emma', 'Michael', 'Olivia', 'William', 'Sophia', 'James', 'Ava', 'Robert', 'Mia'];
+      const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+      const locations = ['New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ', 'Philadelphia, PA', 'San Antonio, TX', 'San Diego, CA', 'Dallas, TX', 'San Jose, CA'];
+      const interests = ['Hiking', 'Cooking', 'Reading', 'Travel', 'Photography', 'Music', 'Movies', 'Art', 'Sports', 'Yoga', 'Dancing', 'Gaming', 'Fitness', 'Wine Tasting', 'Writing', 'Gardening', 'Technology', 'Fashion', 'Pets', 'Volunteering'];
+      const genders = ['male', 'female', 'non-binary'];
+      const lookingFor = [['male'], ['female'], ['male', 'female'], ['male', 'female', 'non-binary']];
+      const relationshipTypes = ['Long-term relationship', 'Short-term relationship', 'Casual dating', 'Friendship', 'Not sure yet'];
+      
+      // Generate random date of birth (25-45 years old)
+      const getRandomBirthdate = () => {
+        const today = new Date();
+        const minAge = 25;
+        const maxAge = 45;
+        const age = Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;
+        
+        const year = today.getFullYear() - age;
+        const month = Math.floor(Math.random() * 12) + 1;
+        const day = Math.floor(Math.random() * 28) + 1; // Avoid edge cases with month lengths
+        
+        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       };
       
-      if (expiryDate) {
-        updateData.membershipExpires = new Date(expiryDate);
-      } else if (membershipType !== 'premium') {
-        // Clear expiry date for non-premium memberships
-        updateData.membershipExpires = null;
+      // Generate random interests (3-6 interests)
+      const getRandomInterests = () => {
+        const shuffled = [...interests].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, Math.floor(Math.random() * 4) + 3);
+      };
+      
+      const getRandomLookingFor = () => {
+        return lookingFor[Math.floor(Math.random() * lookingFor.length)];
+      };
+      
+      // Create hash for demo password (same for all demo users)
+      const salt = await bcrypt.genSalt(10);
+      const demoPassword = await bcrypt.hash('demo123', salt);
+      
+      // Create demo users
+      const demoUsers = [];
+      
+      for (let i = 0; i < count; i++) {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const gender = genders[Math.floor(Math.random() * genders.length)];
+        
+        const demoUser = {
+          email: `demo${Date.now()}-${i}@example.com`,
+          password: demoPassword,
+          firstName,
+          lastName,
+          role: 'user',
+          membershipType: 'demo', // Mark as demo user
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          profile: {
+            birthdate: getRandomBirthdate(),
+            gender,
+            location: locations[Math.floor(Math.random() * locations.length)],
+            bio: `Hi, I'm ${firstName}! This is a demo profile generated for testing purposes.`,
+            interests: getRandomInterests(),
+            occupation: ['Engineer', 'Designer', 'Teacher', 'Doctor', 'Artist', 'Writer', 'Entrepreneur'][Math.floor(Math.random() * 7)],
+            education: ['High School', 'Bachelor\'s Degree', 'Master\'s Degree', 'PhD'][Math.floor(Math.random() * 4)],
+            lookingFor: getRandomLookingFor(),
+            ageRange: { 
+              min: 25 + Math.floor(Math.random() * 10), 
+              max: 35 + Math.floor(Math.random() * 10) 
+            },
+            distance: 10 + Math.floor(Math.random() * 90),
+            relationshipType: relationshipTypes[Math.floor(Math.random() * relationshipTypes.length)],
+            photos: [
+              {
+                url: `https://placehold.co/400x600/7464a0/ffffff?text=${firstName}`,
+                isMain: true
+              }
+            ]
+          }
+        };
+        
+        const result = await db.collection('users').insertOne(demoUser);
+        demoUsers.push({ _id: result.insertedId, ...demoUser });
       }
       
-      const result = await db.collection('users').updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: updateData }
-      );
-      
-      return result.modifiedCount > 0;
+      return demoUsers;
     } catch (error) {
-      console.error('Error updating user membership:', error);
-      return false;
-    }
-  }
-
-  // Delete user
-  static async delete(userId) {
-    try {
-      const db = await connectDB();
-      
-      const result = await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
-      
-      return result.deletedCount > 0;
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      return false;
-    }
-  }
-
-  // Get all users (for admin)
-  static async getAll(limit = 100, skip = 0) {
-    try {
-      const db = await connectDB();
-      
-      const users = await db.collection('users')
-        .find({})
-        .project({ password: 0 }) // Exclude password
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray();
-      
-      return users;
-    } catch (error) {
-      console.error('Error getting all users:', error);
-      return [];
+      console.error('Error creating demo users:', error);
+      throw error;
     }
   }
 }
-
-// Constants for membership types
-export const MEMBERSHIP_TYPES = {
-  BASIC: 'basic',
-  PREMIUM: 'premium',
-  DEMO: 'demo'
-};
-
-// Constants for education options
-export const educationOptions = [
-  "High School", "Some College", "Associate's Degree", 
-  "Bachelor's Degree", "Master's Degree", "PhD", "Trade School"
-];
-
-// Constants for relationship types
-export const relationshipOptions = [
-  "Long-term relationship",
-  "Short-term relationship",
-  "Casual dating",
-  "Friendship",
-  "Not sure yet"
-];
 
 export default User;

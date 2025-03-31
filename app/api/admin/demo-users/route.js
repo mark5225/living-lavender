@@ -140,5 +140,6 @@ export async function DELETE(request) {
     const result = await db.collection('users')
       .deleteMany({ membershipType: 'demo' });
     
-    return NextResponse.json({
-      message: `Successfully deleted ${result.
+      return NextResponse.json({
+        message: `Successfully deleted ${result.deletedCount} demo users`,
+        count: result.deletedCount
