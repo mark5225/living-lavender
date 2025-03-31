@@ -48,18 +48,21 @@ export default function DashboardPage() {
         </div>
         
         <div className={styles.dashboardContent}>
-          <div className={styles.cardGrid}>
-            <div className={styles.card}>
-              <div className={styles.cardIcon}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-              </div>
-              <h2>Discover Matches</h2>
-              <p>Browse through potential matches and find your perfect connection.</p>
-              <Link href="/matches" className="btn btn-primary">Start Browsing</Link>
+          <div className={styles.matchesHighlight}>
+            <div className={styles.highlightContent}>
+              <h2>Find Your Perfect Match Today!</h2>
+              <p>Browse through potential matches and start meaningful conversations.</p>
+              <Link href="/matches" className="btn btn-primary btn-lg">Discover Matches</Link>
             </div>
-            
+            <div className={styles.highlightImage}>
+              <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="100" fill="#f8f5ff" />
+                <path d="M135 60C123.1 60 112.5 65.9 107 75.3C101.5 65.9 90.9 60 79 60C60.2 60 45 75.2 45 94C45 116.7 64.3 135.2 92.3 160.4L107 174L121.7 160.4C149.7 135.2 169 116.7 169 94C169 75.2 153.8 60 135 60Z" fill="#7464A0"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div className={styles.cardGrid}>
             <div className={styles.card}>
               <div className={styles.cardIcon}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -81,6 +84,19 @@ export default function DashboardPage() {
               <h2>Messages</h2>
               <p>Check your messages and start conversations with your matches.</p>
               <Link href="/messages" className="btn btn-outline">View Messages</Link>
+            </div>
+            
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <h2>Help Center</h2>
+              <p>Get answers to common questions and learn how to use all features.</p>
+              <Link href="/help" className="btn btn-outline">Visit Help Center</Link>
             </div>
           </div>
           

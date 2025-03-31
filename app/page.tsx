@@ -17,11 +17,11 @@ export default function Home() {
                 interests, and lifestyle.
               </p>
               <div className={styles.heroButtons}>
-                <Link href="/signup" className="btn btn-primary btn-lg">
-                  Get Started
+                <Link href="/matches" className="btn btn-primary btn-lg">
+                  Browse Matches
                 </Link>
-                <Link href="/about" className="btn btn-outline btn-lg">
-                  Learn More
+                <Link href="/signup/basic" className="btn btn-outline btn-lg">
+                  Sign Up Free
                 </Link>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function Home() {
           </div>
           
           <div className={styles.ctaContainer}>
-            <Link href="/signup" className="btn btn-primary btn-lg">
+            <Link href="/matches" className="btn btn-primary btn-lg">
               Start Your Journey
             </Link>
           </div>
@@ -182,11 +182,16 @@ export default function Home() {
       <section className={styles.cta}>
         <div className="container">
           <div className={styles.ctaInner}>
-            <h2>Ready to Find Your Match?</h2>
+            <h2>Ready to Find Your Perfect Match?</h2>
             <p>Join thousands of singles already on Living Lavender and start your journey to finding love today.</p>
-            <Link href="/signup" className="btn btn-primary btn-lg">
-              Sign Up Now
-            </Link>
+            <div className={styles.ctaButtons}>
+              <Link href="/matches" className="btn btn-primary btn-lg">
+                Browse Matches
+              </Link>
+              <Link href="/signup/basic" className="btn btn-outline btn-lg btn-light">
+                Create Account
+              </Link>
+            </div>
           </div>
         </div>
       </section>

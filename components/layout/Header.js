@@ -56,6 +56,11 @@ const Header = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/matches" className={`${styles.navLink} ${styles.matchesLink}`} onClick={() => setIsMenuOpen(false)}>
+                  Matches
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className={styles.navLink} onClick={() => setIsMenuOpen(false)}>
                   About
                 </Link>
